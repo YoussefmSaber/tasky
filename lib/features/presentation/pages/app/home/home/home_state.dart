@@ -15,11 +15,15 @@ class PaginationLoadingState extends HomeState {}
 
 /// State indicating that tasks have been successfully retrieved.
 class GetTasksSuccessState extends HomeState {
-  /// List of retrieved tasks.
-  final List<TaskData> tasks;
+  final List<TaskData> allTasks;
+  final List<TaskData> filteredTasks;
+  final String currentFilter;
 
-  /// Constructor for [GetTasksSuccessState].
-  GetTasksSuccessState(this.tasks);
+  GetTasksSuccessState({
+    required this.allTasks,
+    required this.filteredTasks,
+    required this.currentFilter,
+  });
 }
 
 /// State indicating that logout is currently in progress.

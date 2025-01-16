@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
 import 'package:tasky/core/core.dart';
+import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
 import 'package:tasky/routes.dart';
 
@@ -24,6 +25,9 @@ class _HomePageState extends State<HomePage> {
     final cubit = context.read<HomeCubit>();
     cubit.getTasks(1); // Replace with actual token
   }
+
+  int selectedChipIndex = 0; // Get the selected chip index
+  List<TaskData> tasks = [];
 
   @override
   Widget build(BuildContext context) {
@@ -91,20 +95,24 @@ class _HomePageState extends State<HomePage> {
                     showCheckmark: false,
                     borderRadiiList: [50],
                     inactiveTextColorList: [AppColors.secondaryTextColor],
-                    listOfChipIndicesCurrentlySelected: [0],
+                    listOfChipIndicesCurrentlySelected: [selectedChipIndex],
+                    extraOnToggle: (index) {
+                      setState(() {
+                        selectedChipIndex = index;
+                        context.read<HomeCubit>().filterTasks(index);
+                      });
+                    },
                   ),
                   Expanded(
-                      child: state is GetTasksSuccessState
-                          ? InfiniteScrollPaginationPage(
-                              tasks: state.tasks,
-                            )
-                          : state is TasksLoadingState
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
-                              : const Center(
-                                  child: Text("No tasks available."),
-                                )),
+                    child: state is GetTasksSuccessState
+                        ? InfiniteScrollPaginationPage(
+                      tasks: state.filteredTasks,
+                      onRefresh: () => context.read<HomeCubit>().getTasks(1),
+                    )
+                        : state is TasksLoadingState
+                        ? const Center(child: CircularProgressIndicator())
+                        : const Center(child: Text("No tasks available.")),
+                  ),
                 ],
               ),
             ),
@@ -143,4 +151,5 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+// Function to filter tasks based on selected chip
 }

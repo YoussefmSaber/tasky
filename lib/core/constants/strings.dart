@@ -23,7 +23,7 @@ class Strings {
   static const profile = "Profile";
   static const taskDetails = "Task Details";
   static const states = ['waiting', 'inProgress', 'finished'];
-  static const filters = ['ALL', 'Waiting', 'Inprogress', 'Finished'];
+  static const filters = ['ALL', 'waiting', 'inProgress', 'finished'];
   static const priorities = [
     'low',
     'medium',

@@ -14,6 +14,10 @@ class LoginCubit extends Cubit<LoginState> {
   /// Takes a [LoginUseCase] as a parameter.
   LoginCubit(this.loginUseCase) : super(LoginInitial());
 
+  Future<void> initial() async {
+    emit(LoginInitial());
+  }
+
   /// Logs in a user with the provided [phone] and [password].
   ///
   /// Emits [LoginLoading] while the login is in progress.
@@ -26,6 +30,8 @@ class LoginCubit extends Cubit<LoginState> {
       if (userTokens != null && userTokens.accessToken != null) {
         await getIt<SharedPreferenceService>()
             .saveAccessToken(userTokens.accessToken!);
+        await getIt<SharedPreferenceService>()
+            .saveRefreshToken(userTokens.accessToken!);
         emit(LoginSuccess(userTokens));
       } else {
         emit(LoginError("Login failed"));

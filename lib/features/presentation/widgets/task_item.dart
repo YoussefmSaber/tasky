@@ -19,10 +19,10 @@ class TaskItem extends StatelessWidget {
               .pushNamed(RouteGenerator.details, arguments: taskData),
           contentPadding: EdgeInsets.zero,
           leading: ClipOval(
-            child: Image.network(taskData.image!,
+            child: Image.network("https://todo.iraqsapp.com/images/${taskData.image!}",
                 height: 55,
                 width: 55,
-                fit: BoxFit.fill, errorBuilder: (context, error, stackTrace) {
+                fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
               return CircleAvatar(
                 backgroundColor: AppColors.secondaryTextColor,
               );

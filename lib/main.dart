@@ -7,6 +7,7 @@ import 'package:tasky/features/presentation/pages/app/add_task/new_task/new_task
 import 'package:tasky/features/presentation/pages/app/details/details/details_cubit.dart';
 import 'package:tasky/features/presentation/pages/app/profile/profile/profile_cubit.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
+import 'package:tasky/features/presentation/pages/onboarding/cubit/onboarding_cubit.dart';
 import 'package:tasky/injection_container.dart';
 import 'package:tasky/routes.dart';
 
@@ -21,19 +22,22 @@ void main() async {
   final sharedPrefService = SharedPreferenceService(prefs);
   setup(sharedPrefService);
   final accessToken = sharedPrefService.getAccessToken();
+  final isOnboardingCompleted = prefs.getBool('onboarding') ?? false;
 
   Bloc.observer = StateObserver();
-  runApp(MyApp(token: accessToken));
+  runApp(
+      MyApp(token: accessToken, isOnboardingCompleted: isOnboardingCompleted));
 }
 
 /// The root widget of the application.
 class MyApp extends StatelessWidget {
   final String? token;
+  final bool isOnboardingCompleted;
 
   /// Constructs a [MyApp] widget.
   ///
   /// The [token] parameter is optional and can be null.
-  const MyApp({super.key, this.token});
+  const MyApp({super.key, this.token, required this.isOnboardingCompleted});
 
   /// Builds the widget tree for the application.
   ///
@@ -42,6 +46,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => getIt<OnboardingCubit>()),
         BlocProvider(create: (context) => getIt<LoginCubit>()),
         BlocProvider(create: (context) => getIt<RegisterCubit>()),
         BlocProvider(create: (context) => getIt<HomeCubit>()),
@@ -65,10 +70,14 @@ class MyApp extends StatelessWidget {
   /// If the [token] is null, the initial route is set to the onboarding screen.
   /// Otherwise, it is set to the home screen.
   String getInitialRoute(String? token) {
-    if (token == null) {
-      return RouteGenerator.onBoarding;
+    if (isOnboardingCompleted) {
+      if (token == null || token.isEmpty) {
+        return RouteGenerator.login;
+      } else {
+        return RouteGenerator.home;
+      }
     } else {
-      return RouteGenerator.home;
+      return RouteGenerator.onBoarding;
     }
   }
 }

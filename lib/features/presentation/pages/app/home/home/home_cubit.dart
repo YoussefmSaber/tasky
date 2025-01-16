@@ -37,6 +37,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(LogoutLoadingState());
       final accessToken = getIt<SharedPreferenceService>().getAccessToken();
       final refresh = getIt<SharedPreferenceService>().getRefreshToken();
+      print("$accessToken, $refresh");
       await getIt<SharedPreferenceService>().clearTokens();
       final response = await logoutUseCase.logout(refresh!, accessToken!);
       emit(LogoutSuccessState(response));

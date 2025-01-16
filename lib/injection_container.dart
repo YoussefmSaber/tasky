@@ -12,6 +12,7 @@ import 'package:tasky/features/domain/use_cases/task/post/upload_image_use_case.
 import 'package:tasky/features/domain/use_cases/user/refresh_token_use_case.dart';
 import 'package:tasky/features/presentation/pages/app/profile/profile/profile_cubit.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
+import 'package:tasky/features/presentation/pages/onboarding/cubit/onboarding_cubit.dart';
 import 'features/data/data_sources/todo/todos_data_source.dart';
 import 'features/domain/use_cases/auth/register_use_case.dart';
 import 'features/domain/use_cases/task/get/get_task_use_case.dart';
@@ -78,6 +79,8 @@ void setup(SharedPreferenceService sharedPrefService) {
   getIt.registerLazySingleton<DetailsCubit>(() => DetailsCubit(getIt()));
   getIt.registerLazySingleton<NewTaskCubit>(
       () => NewTaskCubit(getIt(), getIt(), getIt(), getIt()));
+
+  getIt.registerLazySingleton<OnboardingCubit>(() => OnboardingCubit(getIt()));
 
   getIt.registerSingleton<SharedPreferenceService>(sharedPrefService);
 }

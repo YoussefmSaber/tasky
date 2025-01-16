@@ -49,10 +49,10 @@ class DetailsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.network(taskData.image!,
+              Image.network("https://todo.iraqsapp.com/images/${taskData.image!}",
                   height: 250,
                   width: double.infinity,
-                  fit: BoxFit.fill, errorBuilder: (context, error, stackTrace) {
+                  fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
                 return CircleAvatar(
                   backgroundColor: AppColors.secondaryTextColor,
                 );

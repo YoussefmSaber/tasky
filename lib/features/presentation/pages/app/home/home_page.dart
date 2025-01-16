@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
 import 'package:tasky/core/core.dart';
+import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
 
@@ -29,6 +30,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BlocConsumer<HomeCubit, HomeState>(
       listener: (context, state) {
+        if (state is LogoutSuccessState) {
+          // Navigate to login page
+          Navigator.of(context).pushNamed(
+            RouteGenerator.login,
+            arguments: () {
+              // Reset the cubit state
+              context.read<LoginCubit>().initial();
+            },
+          );
+        }
+        if (state is TasksLoadingState) {
+          // Ensure this doesn't trigger after logout
+        }
         if (state is GetTasksErrorState) {
           // Handle error, e.g., show a snackbar
           ScaffoldMessenger.of(context).showSnackBar(
@@ -52,8 +66,10 @@ class _HomePageState extends State<HomePage> {
               ),
               IconButton(
                 onPressed: () {
-                  context.read<HomeCubit>().logout();
-                  Navigator.of(context).pushNamed(RouteGenerator.login);
+                  context.read<HomeCubit>().logout().then((_) {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        RouteGenerator.login, (route) => false);
+                  });
                 },
                 icon: AppIcons.logout,
               ),

@@ -9,6 +9,10 @@ class SharedPreferenceService {
   /// Takes a [SharedPreferences] instance as a parameter.
   SharedPreferenceService(this._prefs);
 
+  Future<void> saveOnboardingState() async {
+    await _prefs.setBool("onboarding", true);
+  }
+
   /// Saves the access token to shared preferences.
   ///
   /// Takes a [String] token as a parameter.

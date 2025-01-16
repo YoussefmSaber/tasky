@@ -25,6 +25,8 @@ class RouteGenerator {
       case onBoarding:
         return MaterialPageRoute(builder: (_) => const OnboardPage());
       case login:
+        final resetCubitState = settings.arguments as VoidCallback?;
+        resetCubitState?.call();
         return MaterialPageRoute(builder: (_) => LoginPage());
       case register:
         return MaterialPageRoute(builder: (_) => RegisterPage());

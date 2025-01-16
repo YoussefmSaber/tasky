@@ -7,10 +7,23 @@ import 'package:tasky/routes.dart';
 
 import 'cubit/login_cubit.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Reset cubit state on screen initialization
+    context.read<LoginCubit>().initial();
+  }
 
   final TextEditingController phoneController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
 
   @override
@@ -72,6 +85,27 @@ class LoginPage extends StatelessWidget {
   void _onLoginButtonPressed(BuildContext context) {
     final phone = phoneController.text;
     final password = passwordController.text;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Wait while we log you in"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min, // Wrap content vertically
+              children: [
+                CircularProgressIndicator(
+                  color: AppColors.inprogressTextColor,
+                ),
+              ],
+            ),
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.all(Radius.circular(8)), // Adjust corner radius
+            ),
+          );
+        });
     context.read<LoginCubit>().login(phone: phone, password: password);
   }
 
@@ -110,16 +144,7 @@ class LoginStateBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (BuildContext context, LoginState state) {
-        if (state is LoginLoading) {
-          return AlertDialog(
-            key: Key('Loading dialog'),
-            content: CircularProgressIndicator(
-              color: AppColors.inprogressTextColor,
-            ),
-            backgroundColor: Colors.white,
-            surfaceTintColor: Colors.white,
-          );
-        } else if (state is LoginSuccess) {
+        if (state is LoginSuccess) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             phoneController.clear();
             passwordController.clear();

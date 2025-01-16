@@ -7,8 +7,9 @@ abstract class TasksRepositories {
   /// Fetches a list of tasks.
   ///
   /// [accessToken] is required for authentication.
+  /// [page] is the page number for pagination.
   /// Returns a list of [TaskData].
-  Future<List<TaskData>> getListOfTasks(String accessToken);
+  Future<List<TaskData>> getListOfTasks(String accessToken, int page);
 
   /// Fetches a specific task by its ID.
   ///

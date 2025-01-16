@@ -14,18 +14,18 @@ dependencies:
 
   # Core Dependencies
   dio: ^5.7.0                     # For HTTP requests
-  bloc: ^8.1.4                    # Business logic component (BLoC)
-  flutter_bloc: ^8.1.6            # Flutter BLoC integration
-  intl: ^0.19.0                   # For internationalization
-  sqflite: ^2.4.0                 # Local SQLite database
-  shared_preferences: ^2.3.2      # Local key-value storage
+  bloc: ^9.0.0                    # Business logic component (BLoC)
+  flutter_bloc: ^9.0.0            # Flutter BLoC integration
+  intl: ^0.20.1                   # For internationalization
+  sqflite: ^2.4.1                 # Local SQLite database
+  shared_preferences: ^2.3.5      # Local key-value storage
 
   # Utilities
-  get_it: ^8.0.2                  # Dependency injection
+  get_it: ^8.0.3                  # Dependency injection
   path_provider: ^2.1.5           # Access device file paths
   json_annotation: ^4.9.0         # For JSON serialization
-  hydrated_bloc: ^9.1.5           # BLoC state persistence with hydration
-  flutter_launcher_icons: ^0.14.1 # Launcher icon generation
+  hydrated_bloc: ^10.0.0           # BLoC state persistence with hydration
+  flutter_launcher_icons: ^0.14.2 # Launcher icon generation
   data_connection_checker_nulls: ^0.0.2  # Network connection checker
 
   # UI Libraries
@@ -34,10 +34,10 @@ dependencies:
   hexcolor: ^3.0.1                # Color utility for hex values
   chip_list: ^3.1.0               # Chip list widget
   qr_flutter: ^4.1.0              # QR code generator
-  flutter_svg: ^2.0.12            # SVG support in Flutter
+  flutter_svg: ^2.0.17            # SVG support in Flutter
   flutter_svg_icons: ^0.0.1+4     # Predefined SVG icons
   google_fonts: ^6.2.1            # Google Fonts package
-  fade_shimmer: ^2.2.0            # Loading shimmer effects
+  fade_shimmer: ^2.3.0            # Loading shimmer effects
   flutter_staggered_animations: ^1.1.1  # Staggered animations
 
   # Phone utilities
@@ -46,14 +46,15 @@ dependencies:
 
   # Animations
   animations: ^2.0.11             # Flutter animations package
+  infinite_scroll_pagination: ^4.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0           # Linting rules for best practices
-  json_serializable: ^6.8.0       # Auto-generate JSON serialization code
-  build_runner: ^2.4.13           # Code generation for json_serializable
+  json_serializable: ^6.9.3       # Auto-generate JSON serialization code
+  build_runner: ^2.4.14           # Code generation for json_serializable
 
 flutter_launcher_icons:
   android: true

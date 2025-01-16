@@ -4,11 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
 import 'package:tasky/core/core.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
-import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
 
 import 'home/home_cubit.dart';
 import 'home/home_state.dart';
+import '../../../widgets/infinite_scroll_pagination_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,8 +22,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     final cubit = context.read<HomeCubit>();
-
-    cubit.getTasks(); // Replace with actual token
+    cubit.getTasks(1); // Replace with actual token
   }
 
   @override
@@ -39,9 +38,6 @@ class _HomePageState extends State<HomePage> {
               context.read<LoginCubit>().initial();
             },
           );
-        }
-        if (state is TasksLoadingState) {
-          // Ensure this doesn't trigger after logout
         }
         if (state is GetTasksErrorState) {
           // Handle error, e.g., show a snackbar
@@ -98,30 +94,17 @@ class _HomePageState extends State<HomePage> {
                     listOfChipIndicesCurrentlySelected: [0],
                   ),
                   Expanded(
-                    child: state is TasksLoadingState
-                        ? const Center(child: CircularProgressIndicator())
-                        : state is GetTasksSuccessState
-                            ? ListView.separated(
-                                itemBuilder: (_, index) => TaskItem(
-                                  taskData: state.tasks[index],
-                                ),
-                                separatorBuilder: (_, index) =>
-                                    const SizedBox(height: 8),
-                                itemCount: state.tasks.length,
-                              )
-                            : state is GetTasksErrorState
-                                ? Center(
-                                    child: Text(
-                                      "Error: ${state.message}",
-                                      style: const TextStyle(
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  )
-                                : const Center(
-                                    child: Text("No tasks available."),
-                                  ),
-                  ),
+                      child: state is GetTasksSuccessState
+                          ? InfiniteScrollPaginationPage(
+                              tasks: state.tasks,
+                            )
+                          : state is TasksLoadingState
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : const Center(
+                                  child: Text("No tasks available."),
+                                )),
                 ],
               ),
             ),

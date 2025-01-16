@@ -12,9 +12,10 @@ class GetTasksUseCase {
 
   /// Retrieves a list of tasks.
   ///
-  /// Takes an `accessToken` as a parameter.
+  /// Takes an `accessToken` .
+  /// and a `page` number as parameters.
   /// Returns a `Future` that resolves to a list of `TaskData`.
-  Future<List<TaskData>> getListOfTasks(String accessToken) async {
-    return await tasksRepositories.getListOfTasks(accessToken);
+  Future<List<TaskData>> getListOfTasks(String accessToken, int page) async {
+    return await tasksRepositories.getListOfTasks(accessToken, page);
   }
 }

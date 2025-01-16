@@ -9,7 +9,7 @@ class ApiEndpoints {
 
   // End Points for To-Dos
   static const todo = '/todos';
-  static const list = '$todo?page=1';
+  static const list = '$todo?page=';
 
   // End Points for Upload
   static const upload = '/upload/image';

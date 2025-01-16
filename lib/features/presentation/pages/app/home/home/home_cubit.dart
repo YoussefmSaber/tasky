@@ -18,11 +18,15 @@ class HomeCubit extends Cubit<HomeState> {
       : super(HomeInitialState());
 
   /// Fetches the list of tasks and updates the state accordingly.
-  Future<void> getTasks() async {
+  Future<void> getTasks(int page) async {
     try {
-      emit(TasksLoadingState());
+      if (page == 1) {
+        emit(TasksLoadingState());
+      } else {
+        emit(PaginationLoadingState());
+      }
       final accessToken = getIt<SharedPreferenceService>().getAccessToken();
-      final tasks = await tasksUseCase.getListOfTasks(accessToken!);
+      final tasks = await tasksUseCase.getListOfTasks(accessToken!, page);
       emit(GetTasksSuccessState(tasks));
     } catch (e) {
       emit(GetTasksErrorState(e.toString()));

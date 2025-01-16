@@ -46,11 +46,12 @@ class TasksRepositoriesImpl implements TasksRepositories {
 
   /// Retrieves a list of tasks.
   ///
-  /// Takes an access token as a parameter.
+  /// Takes an access token.
+  /// and a page number as a parameter.
   /// Returns a `Future` of a list of `TaskData`.
   @override
-  Future<List<TaskData>> getListOfTasks(String accessToken) {
-    final res = dataSource.getListOfTasks(accessToken);
+  Future<List<TaskData>> getListOfTasks(String accessToken, int page) {
+    final res = dataSource.getListOfTasks(accessToken, page);
     return res;
   }
 

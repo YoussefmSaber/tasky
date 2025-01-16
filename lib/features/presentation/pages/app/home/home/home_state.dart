@@ -10,6 +10,9 @@ class HomeInitialState extends HomeState {}
 /// State indicating that tasks are currently being loaded.
 class TasksLoadingState extends HomeState {}
 
+/// State indicating that pagination is currently loading.
+class PaginationLoadingState extends HomeState {}
+
 /// State indicating that tasks have been successfully retrieved.
 class GetTasksSuccessState extends HomeState {
   /// List of retrieved tasks.

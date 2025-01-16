@@ -79,9 +79,9 @@ class TodosDataSource {
   /// Takes an [accessToken] as a parameter.
   /// Returns a list of [TaskData] objects if the tasks are retrieved successfully.
   /// Throws an [Exception] if the task retrieval fails.
-  Future<List<TaskData>> getListOfTasks(String accessToken) async {
+  Future<List<TaskData>> getListOfTasks(String accessToken, int page) async {
     try {
-      final response = await dioClient.dio.get(ApiEndpoints.list,
+      final response = await dioClient.dio.get(ApiEndpoints.list + page.toString(),
           options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> jsonData = response.data;

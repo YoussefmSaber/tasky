@@ -56,7 +56,7 @@ class _InfiniteScrollPaginationPageState
             taskData: taskData,
             onEdit: (id) {},
             onDelete: (id) {
-              context.read<HomeCubit>().deleteTask(taskData.id!);
+              context.read<HomeCubit>().deletingTask(id);
             },
           ),
           noMoreItemsIndicatorBuilder: (context) => const Padding(

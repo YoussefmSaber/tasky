@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasky/core/core.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
+import 'package:tasky/features/presentation/pages/app/home/home/home_cubit.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
 
@@ -9,11 +11,12 @@ class TaskItem extends StatelessWidget {
   final Function(String) onEdit;
   final Function(String) onDelete;
 
-  const TaskItem(
-      {super.key,
-      required this.taskData,
-      required this.onEdit,
-      required this.onDelete});
+  const TaskItem({
+    super.key,
+    required this.taskData,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +48,7 @@ class TaskItem extends StatelessWidget {
                 style: FontStyles.listTitleStyle,
               ),
             ),
-            ProgressTag(
-              state: taskData.status!,
-            )
+            ProgressTag(state: taskData.status!)
           ]),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,9 +59,7 @@ class TaskItem extends StatelessWidget {
                 maxLines: 1,
                 style: FontStyles.descriptionStyle,
               ),
-              SizedBox(
-                height: 8,
-              ),
+              SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -74,23 +73,60 @@ class TaskItem extends StatelessWidget {
             ],
           ),
           trailing: PopupMenuButton(
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                value: 'edit',
+                child: Text("Edit", style: FontStyles.menuTextStyle),
+              ),
+              PopupMenuItem(
+                value: 'delete',
+                child: Text("Delete", style: FontStyles.errorMenuTextStyle),
+              )
+            ],
             onSelected: (value) {
               if (value == 'edit') {
                 onEdit(taskData.id!);
               } else if (value == 'delete') {
-                onDelete(taskData.id!);
+                showDialog(
+                    context: context,
+                    builder: (dialogContext) {
+                      return AlertDialog(
+                          title: Text(
+                            "Deleting task?",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          content: Text(
+                            "By doing this you are going to delete the task. Are you sure?",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(dialogContext);
+                                  context
+                                      .read<HomeCubit>()
+                                      .deletingTask(taskData.id!);
+                                },
+                                child: Text(
+                                  "Sure",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.inprogressTextColor),
+                                )),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(dialogContext);
+                                },
+                                child: Text(
+                                  "I think not",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.errorTextColor),
+                                ))
+                          ]);
+                    });
               }
             },
-            itemBuilder: (BuildContext context) => [
-              PopupMenuItem(
-                  value: 'edit',
-                  child:
-                      TextButton(onPressed: () => onEdit, child: Text("Edit"))),
-              PopupMenuItem(
-                  value: 'delete',
-                  child: TextButton(
-                      onPressed: () => onDelete, child: Text("Delete")))
-            ],
           ),
         ));
   }

@@ -85,17 +85,25 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> deletingTask(String taskId) async {
     try {
       final accessToken = getIt<SharedPreferenceService>().getAccessToken();
-      final deletedTask =
-          await deleteTaskUseCase.deleteTask(taskId, accessToken!);
-      _allTasks.remove(deletedTask);
+      final deletedTask = await deleteTaskUseCase.deleteTask(taskId, accessToken!);
+
+      // Update the local task list
+      _allTasks.removeWhere((task) => task.id == taskId);
+
+      // Emit the deleted state first
+      emit(TaskDeletedState(deletedTask));
+
+      // Then update the filtered view
       final filteredTasks = _currentFilter.isEmpty
           ? _allTasks
           : _allTasks.where((task) => task.status == _currentFilter).toList();
+
       emit(GetTasksSuccessState(
         allTasks: _allTasks,
         filteredTasks: filteredTasks,
         currentFilter: _currentFilter,
       ));
+
     } catch (e) {
       emit(GetTasksErrorState(e.toString()));
     }

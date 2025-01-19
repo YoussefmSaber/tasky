@@ -90,9 +90,12 @@ class _HomePageState extends State<HomePage> {
             SnackBar(content: Text("Task Deleted Successfully")),
           );
           Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Task Deleted Successfully")),
+          );
         }
       },
-      builder: (context, state) {
+      builder: (builderContext, state) {
         return Scaffold(
           appBar: AppBar(
             leading: const SizedBox(),

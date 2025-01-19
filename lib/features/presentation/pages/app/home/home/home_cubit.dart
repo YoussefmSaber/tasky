@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:tasky/features/data/data_sources/shared_preference.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/domain/use_cases/task/get/get_tasks_use_case.dart';
+import 'package:tasky/features/domain/use_cases/task/post/delete_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/user/logout_use_case.dart';
 import 'package:tasky/features/presentation/pages/app/home/home/home_state.dart';
 import 'package:tasky/injection_container.dart';
@@ -11,15 +12,17 @@ import 'package:tasky/injection_container.dart';
 // Update the HomeCubit with stream-based filtering
 class HomeCubit extends Cubit<HomeState> {
   final GetTasksUseCase tasksUseCase;
+  final DeleteTaskUseCase deleteTaskUseCase;
   final LogoutUseCase logoutUseCase;
 
   List<TaskData> _allTasks = [];
   String _currentFilter = '';
 
-  HomeCubit({
-    required this.tasksUseCase,
-    required this.logoutUseCase,
-  }) : super(HomeInitialState());
+  HomeCubit(
+      {required this.tasksUseCase,
+      required this.logoutUseCase,
+      required this.deleteTaskUseCase})
+      : super(HomeInitialState());
 
   Future<void> getTasks(int page) async {
     try {
@@ -72,6 +75,29 @@ class HomeCubit extends Cubit<HomeState> {
         return 'inProgress';
       default:
         return 'finished';
+    }
+  }
+
+  Future<void> deleteTask(String taskId) async {
+    emit(TaskDeletingState(taskId));
+  }
+
+  Future<void> deletingTask(String taskId) async {
+    try {
+      final accessToken = getIt<SharedPreferenceService>().getAccessToken();
+      final deletedTask =
+          await deleteTaskUseCase.deleteTask(taskId, accessToken!);
+      _allTasks.remove(deletedTask);
+      final filteredTasks = _currentFilter.isEmpty
+          ? _allTasks
+          : _allTasks.where((task) => task.status == _currentFilter).toList();
+      emit(GetTasksSuccessState(
+        allTasks: _allTasks,
+        filteredTasks: filteredTasks,
+        currentFilter: _currentFilter,
+      ));
+    } catch (e) {
+      emit(GetTasksErrorState(e.toString()));
     }
   }
 

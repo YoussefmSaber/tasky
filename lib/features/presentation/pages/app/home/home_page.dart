@@ -49,6 +49,48 @@ class _HomePageState extends State<HomePage> {
             SnackBar(content: Text(state.message)),
           );
         }
+        if (state is TaskDeletingState) {
+          showDialog(
+              context: context,
+              builder: (dialogContext) {
+                return AlertDialog(
+                    title: Text(
+                      "Deleting task?",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    content: Text(
+                      "By doing this you are going to delete the task. Are you sure?",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            context.read<HomeCubit>().deleteTask(state.taskId);
+                          },
+                          child: Text(
+                            "Sure",
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.inprogressTextColor),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                          },
+                          child: Text(
+                            "I think not",
+                            style: TextStyle(
+                                fontSize: 12, color: AppColors.errorTextColor),
+                          ))
+                    ]);
+              });
+        }
+        if (state is TaskDeletedState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Task Deleted Successfully")),
+          );
+          Navigator.pop(context);
+        }
       },
       builder: (context, state) {
         return Scaffold(
@@ -106,12 +148,13 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: state is GetTasksSuccessState
                         ? InfiniteScrollPaginationPage(
-                      tasks: state.filteredTasks,
-                      onRefresh: () => context.read<HomeCubit>().getTasks(1),
-                    )
+                            tasks: state.filteredTasks,
+                            onRefresh: () =>
+                                context.read<HomeCubit>().getTasks(1),
+                          )
                         : state is TasksLoadingState
-                        ? const Center(child: CircularProgressIndicator())
-                        : const Center(child: Text("No tasks available.")),
+                            ? const Center(child: CircularProgressIndicator())
+                            : const Center(child: Text("No tasks available.")),
                   ),
                 ],
               ),

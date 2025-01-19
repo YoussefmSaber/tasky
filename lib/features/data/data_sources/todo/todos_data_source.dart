@@ -41,7 +41,7 @@ class TodosDataSource {
   /// Throws an [Exception] if the task deletion fails.
   Future<TaskData> deleteTask(String taskId, String accessToken) async {
     try {
-      final response = await dioClient.dio.delete(ApiEndpoints.todo + taskId,
+      final response = await dioClient.dio.delete('${ApiEndpoints.todo}/$taskId',
           options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);

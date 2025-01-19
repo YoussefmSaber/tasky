@@ -9,6 +9,14 @@ class DetailsInitialState extends DetailsState {}
 /// State representing the loading state of the details feature.
 class DetailsLoadingState extends DetailsState {}
 
+class DetailsTaskDeletingState extends DetailsState {}
+
+class DetailsTaskDeletedState extends DetailsState {
+  final TaskData deletedTask;
+
+  DetailsTaskDeletedState(this.deletedTask);
+}
+
 /// State representing the successful retrieval of details.
 class GetDetailsSuccessState extends DetailsState {
   /// The retrieved task data.

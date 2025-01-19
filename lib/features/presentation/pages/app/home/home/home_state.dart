@@ -10,6 +10,18 @@ class HomeInitialState extends HomeState {}
 /// State indicating that tasks are currently being loaded.
 class TasksLoadingState extends HomeState {}
 
+class TaskDeletingState extends HomeState {
+  final String taskId;
+
+  TaskDeletingState(this.taskId);
+}
+
+class TaskDeletedState extends HomeState {
+  final TaskData deletedTask;
+
+  TaskDeletedState(this.deletedTask);
+}
+
 /// State indicating that pagination is currently loading.
 class PaginationLoadingState extends HomeState {}
 

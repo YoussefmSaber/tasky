@@ -6,8 +6,14 @@ import 'package:tasky/routes.dart';
 
 class TaskItem extends StatelessWidget {
   final TaskData taskData;
+  final Function(String) onEdit;
+  final Function(String) onDelete;
 
-  const TaskItem({super.key, required this.taskData});
+  const TaskItem(
+      {super.key,
+      required this.taskData,
+      required this.onEdit,
+      required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +25,8 @@ class TaskItem extends StatelessWidget {
               .pushNamed(RouteGenerator.details, arguments: taskData),
           contentPadding: EdgeInsets.zero,
           leading: ClipOval(
-            child: Image.network("https://todo.iraqsapp.com/images/${taskData.image!}",
+            child: Image.network(
+                "https://todo.iraqsapp.com/images/${taskData.image!}",
                 height: 55,
                 width: 55,
                 fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
@@ -67,9 +74,22 @@ class TaskItem extends StatelessWidget {
             ],
           ),
           trailing: PopupMenuButton(
+            onSelected: (value) {
+              if (value == 'edit') {
+                onEdit(taskData.id!);
+              } else if (value == 'delete') {
+                onDelete(taskData.id!);
+              }
+            },
             itemBuilder: (BuildContext context) => [
-              PopupMenuItem(child: Text("Edit")),
-              PopupMenuItem(child: Text("Delete"))
+              PopupMenuItem(
+                  value: 'edit',
+                  child:
+                      TextButton(onPressed: () => onEdit, child: Text("Edit"))),
+              PopupMenuItem(
+                  value: 'delete',
+                  child: TextButton(
+                      onPressed: () => onDelete, child: Text("Delete")))
             ],
           ),
         ));

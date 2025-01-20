@@ -2,19 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky/core/core.dart';
 
-/// A widget that displays a date picker input field.
 class DatePicker extends StatefulWidget {
-  /// Creates a [DatePicker] widget.
-  const DatePicker({super.key});
+  final Function(String) onDateSelected; // Add callback function
+
+  const DatePicker({
+    super.key,
+    required this.onDateSelected, // Make it required
+  });
 
   @override
   State<DatePicker> createState() => _DateCardState();
 }
 
-/// State class for [DatePicker] widget.
 class _DateCardState extends State<DatePicker> {
-  /// Controller for the date input field.
   final _dateController = TextEditingController();
+  DateTime? _selectedDate; // Add this to store the date
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,6 @@ class _DateCardState extends State<DatePicker> {
       decoration: InputDecoration(
           suffixIcon: AppIcons.calender,
           hintText: Strings.chooseDueDate,
-          // Added labelText
           hintStyle: FontStyles.hintTextStyle,
           border: WidgetStyles.borderStyle,
           focusedBorder: WidgetStyles.borderStyle),
@@ -35,18 +36,21 @@ class _DateCardState extends State<DatePicker> {
     );
   }
 
-  /// Displays a date picker dialog and updates the input field with the selected date.
-  ///
-  /// [context] is the build context of the widget.
   Future<void> _selectDate(context) async {
     DateTime? pickedDate = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: _selectedDate ?? DateTime.now(),
         firstDate: DateTime(2000),
         lastDate: DateTime(2100));
-    setState(() {
-      var formattedDate = DateFormat("dd MMMM, yyyy").format(pickedDate!);
-      _dateController.text = formattedDate;
-    });
+
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate; // Store the selected date
+        var formattedDate = DateFormat("dd MMMM, yyyy").format(pickedDate);
+        _dateController.text = formattedDate;
+
+        widget.onDateSelected(formattedDate); // Call the callback
+      });
+    }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:tasky/features/domain/entities/task/add_task.dart';
 import 'package:tasky/features/domain/entities/task/edit_task.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
@@ -39,5 +41,5 @@ abstract class TasksRepositories {
   ///
   /// [image] is the image to be uploaded.
   /// Returns the URL of the uploaded image.
-  Future<String> uploadImage(String image);
+  Future<String> uploadImage(File image);
 }

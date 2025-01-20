@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:tasky/core/constants/endpoints.dart';
 import 'package:tasky/features/data/data_sources/dio_client.dart';
@@ -114,16 +116,51 @@ class TodosDataSource {
   /// Takes an [accessToken] and an [image] as parameters.
   /// Returns a [String] if the image is uploaded successfully.
   /// Throws an [Exception] if the image upload fails.
-  Future<String> uploadImage(String image) async {
+  Future<String> uploadImage(File image) async {
     try {
-      final response = await dioClient.dio.get(ApiEndpoints.upload);
+      // Validate file type
+      final String mimeType = image.path.split('.').last.toLowerCase();
+      if (!['jpg', 'jpeg', 'png', 'gif'].contains(mimeType)) {
+        throw Exception('Invalid image format. Only jpg, jpeg, png, and gif are allowed.');
+      }
+
+      // Create form data
+      String fileName = image.path.split('/').last;
+      FormData formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(
+          image.path,
+          filename: fileName,
+          contentType: DioMediaType('image', mimeType),
+        ),
+      });
+
+      print('Uploading file: $fileName'); // Debug print
+
+      // Make POST request with form data
+      final response = await dioClient.dio.post(
+        ApiEndpoints.upload,
+        data: formData,
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+          },
+          // Don't set Content-Type manually, Dio will set it with boundary
+        ),
+      );
+
+      print('Response: ${response.data}'); // Debug print
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return response.data;
+        return response.data['image'];
       } else {
-        throw Exception('Failed to delete the task');
+        throw Exception('Failed to upload image: ${response.data['message']}');
       }
     } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Network error');
+      print('DioException: ${e.response?.data}'); // Debug print
+      throw Exception(e.response?.data['message'] ?? 'Failed to upload image');
+    } catch (e) {
+      print('Exception: $e'); // Debug print
+      throw Exception('An unexpected error occurred while uploading image: $e');
     }
   }
 }

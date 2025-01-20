@@ -7,7 +7,7 @@ export 'details/details_page.dart';
 export 'home/home_page.dart';
 
 /// Exports the new item page for adding tasks.
-export 'add_task/newitem_page.dart';
+export 'add_task/new_task_page.dart';
 
 /// Exports the profile page.
 export 'profile/profile_page.dart';

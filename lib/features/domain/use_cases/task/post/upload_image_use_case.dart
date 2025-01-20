@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:tasky/features/data/repositories/todos_repositories_impl.dart';
 
 /// Use case for uploading an image.
@@ -15,7 +17,7 @@ class UploadImageUseCase {
   /// \[accessToken\] - The access token for authentication.
   /// \[image\] - The image to be uploaded.
   /// Returns a \[Future\] that completes with the URL of the uploaded image.
-  Future<String> uploadImage(String image) async {
+  Future<String> uploadImage(File image) async {
     return await tasksRepositories.uploadImage(image);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:tasky/features/data/data_sources/todo/todos_data_source.dart';
 import 'package:tasky/features/domain/entities/task/add_task.dart';
 import 'package:tasky/features/domain/entities/task/edit_task.dart';
@@ -70,7 +72,7 @@ class TasksRepositoriesImpl implements TasksRepositories {
   /// Takes an access token and an image as parameters.
   /// Returns a `Future` of a string.
   @override
-  Future<String> uploadImage(String image) {
+  Future<String> uploadImage(File image) {
     final res = dataSource.uploadImage(image);
     return res;
   }

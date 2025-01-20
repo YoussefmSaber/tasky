@@ -34,10 +34,13 @@ final getIt = GetIt.instance;
 /// \param sharedPrefService The shared preference service to be registered as a singleton.
 void setup(SharedPreferenceService sharedPrefService) {
   // Dio Client
-  getIt.registerLazySingleton<DioClient>(() => DioClient(getIt(), () {
-        RouteGenerator.navigatorKey.currentState
-            ?.pushNamedAndRemoveUntil(RouteGenerator.login, (route) => false);
-      }));
+  getIt.registerLazySingleton<DioClient>(() => DioClient(
+        preferenceService: getIt(),
+        onLogout: () {
+          RouteGenerator.navigatorKey.currentState
+              ?.pushNamedAndRemoveUntil(RouteGenerator.login, (route) => false);
+        },
+      ));
 
   // Data sources
   getIt.registerLazySingleton<AuthDataSource>(() => AuthDataSource(getIt()));
@@ -81,9 +84,9 @@ void setup(SharedPreferenceService sharedPrefService) {
       logoutUseCase: getIt(),
       deleteTaskUseCase: getIt()));
   getIt.registerLazySingleton<DetailsCubit>(
-      () => DetailsCubit(getIt(), getIt()));
+      () => DetailsCubit(getIt(), getIt(), getIt()));
   getIt.registerLazySingleton<NewTaskCubit>(
-      () => NewTaskCubit(getIt(), getIt(), getIt(), getIt()));
+      () => NewTaskCubit(getIt(), getIt(), getIt()));
 
   getIt.registerLazySingleton<OnboardingCubit>(() => OnboardingCubit(getIt()));
 

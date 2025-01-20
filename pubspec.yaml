@@ -25,7 +25,7 @@ dependencies:
   path_provider: ^2.1.5           # Access device file paths
   json_annotation: ^4.9.0         # For JSON serialization
   hydrated_bloc: ^10.0.0           # BLoC state persistence with hydration
-  flutter_launcher_icons: ^0.14.2 # Launcher icon generation
+  flutter_launcher_icons: ^0.14.3 # Launcher icon generation
   data_connection_checker_nulls: ^0.0.2  # Network connection checker
 
   # UI Libraries
@@ -39,6 +39,8 @@ dependencies:
   google_fonts: ^6.2.1            # Google Fonts package
   fade_shimmer: ^2.3.0            # Loading shimmer effects
   flutter_staggered_animations: ^1.1.1  # Staggered animations
+  image_picker: ^1.1.2  # Image picker for Android and iOS
+  file_picker: ^8.1.7 # File picker for Windows
 
   # Phone utilities
   intl_phone_number_input: ^0.7.4

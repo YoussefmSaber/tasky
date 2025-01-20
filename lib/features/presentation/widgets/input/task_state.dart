@@ -5,9 +5,10 @@ import 'package:tasky/core/core.dart';
 class TaskState extends StatefulWidget {
   /// The initial state of the task.
   final String state;
+  final Function(String) onStateSelected; // Add callback function
 
   /// Creates a [TaskState] widget.
-  const TaskState({super.key, required this.state});
+  const TaskState({super.key, required this.state, required this.onStateSelected});
 
   @override
   State<TaskState> createState() => _TaskStateState();
@@ -60,6 +61,7 @@ class _TaskStateState extends State<TaskState> {
             if (newValue != null) {
               setState(() {
                 stateText = newValue;
+                widget.onStateSelected(newValue);
               });
             }
           },

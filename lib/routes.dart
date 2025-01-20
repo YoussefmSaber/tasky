@@ -42,7 +42,7 @@ class RouteGenerator {
         return MaterialPageRoute(
             builder: (_) => DetailsPage(taskData: taskData));
       case addItem:
-        return MaterialPageRoute(builder: (_) => const NewItemPage());
+        return MaterialPageRoute(builder: (_) => const NewTaskPage());
       default:
         throw FormatException("Route not found");
     }

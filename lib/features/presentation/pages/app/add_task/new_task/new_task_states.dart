@@ -9,17 +9,11 @@ class NewTaskInitialState extends NewTaskStates {}
 /// State representing the loading state of the New Task feature.
 class NewTaskLoadingState extends NewTaskStates {}
 
-/// State representing the success state when a task is updated.
-class UpdateTaskSuccessState extends NewTaskStates {
-  /// The updated task data.
-  final TaskData tasks;
 
-  /// Constructor for [UpdateTaskSuccessState].
-  ///
-  /// Takes the updated [tasks] as a parameter.
-  UpdateTaskSuccessState(this.tasks);
+class TaskAddedSuccessState  extends NewTaskStates{
+  final TaskData task;
+  TaskAddedSuccessState(this.task);
 }
-
 /// State representing the success state when an image is uploaded.
 class UploadImageSuccessState extends NewTaskStates {
   /// The URL of the uploaded image.

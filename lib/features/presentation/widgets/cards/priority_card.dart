@@ -6,8 +6,9 @@ import 'package:tasky/core/core.dart';
 class PriorityCard extends StatefulWidget {
   /// Creates a [PriorityCard] widget.
   final String priority;
+  final Function(String) onPrioritySelected; // Add callback function
 
-  const PriorityCard({super.key, required this.priority});
+  const PriorityCard({super.key, required this.priority, required this.onPrioritySelected});
 
   @override
   State<PriorityCard> createState() => _PriorityCardState();
@@ -64,6 +65,7 @@ class _PriorityCardState extends State<PriorityCard> {
         onChanged: (value) {
           setState(() {
             priorityText = value.toString();
+            widget.onPrioritySelected(value.toString());
           });
         },
         dropdownColor: AppColors.inprogressBackgroundColor,

@@ -15,6 +15,8 @@ class DetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String editedPriority = '';
+    String editedState = '';
     return BlocConsumer<DetailsCubit, DetailsState>(builder: (context, state) {
       return Scaffold(
         appBar: AppBar(
@@ -56,16 +58,19 @@ class DetailsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.network(
-                    "https://todo.iraqsapp.com/images/${taskData.image!}",
-                    height: 250,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                  return CircleAvatar(
-                    backgroundColor: AppColors.secondaryTextColor,
-                  );
-                }),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                      "https://todo.iraqsapp.com/images/${taskData.image!}",
+                      height: 250,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                    return CircleAvatar(
+                      backgroundColor: AppColors.secondaryTextColor,
+                    );
+                  }),
+                ),
                 SizedBox(
                   height: 16,
                 ),
@@ -90,11 +95,16 @@ class DetailsPage extends StatelessWidget {
                 ),
                 TaskState(
                   state: taskData.status!,
+                  onStateSelected: (value) {
+                    editedState = value;
+                  },
                 ),
                 SizedBox(
                   height: 16,
                 ),
-                PriorityCard(priority: taskData.priority!),
+                PriorityCard(priority: taskData.priority!, onPrioritySelected: (value) {
+                  editedPriority = value;
+                }),
                 SizedBox(
                   height: 16,
                 ),

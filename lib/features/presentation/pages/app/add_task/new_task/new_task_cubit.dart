@@ -25,10 +25,10 @@ class NewTaskCubit extends Cubit<NewTaskStates> {
   /// Emits [NewTaskLoadingState] while uploading.
   /// On success, emits [UploadImageSuccessState] with the image URL.
   /// On failure, emits [ErrorUpdatingTaskState] with the error message.
-  Future<void> uploadImage(String accessToken, String image) async {
+  Future<void> uploadImage(String image) async {
     try {
       emit(NewTaskLoadingState());
-      final url = await uploadImageUseCase.uploadImage(accessToken, image);
+      final url = await uploadImageUseCase.uploadImage(image);
       emit(UploadImageSuccessState(url));
     } catch (e) {
       ErrorUpdatingTaskState(e.toString());
@@ -40,10 +40,10 @@ class NewTaskCubit extends Cubit<NewTaskStates> {
   /// Emits [NewTaskLoadingState] while adding the task.
   /// On success, emits [UpdateTaskSuccessState] with the added task.
   /// On failure, emits [ErrorUpdatingTaskState] with the error message.
-  Future<void> addTask(AddTask newTask, String accessToken) async {
+  Future<void> addTask(AddTask newTask) async {
     try {
       emit(NewTaskLoadingState());
-      final task = await addTaskUseCase.addTask(newTask, accessToken);
+      final task = await addTaskUseCase.addTask(newTask);
       emit(UpdateTaskSuccessState(task));
     } catch (e) {
       ErrorUpdatingTaskState(e.toString());
@@ -60,7 +60,7 @@ class NewTaskCubit extends Cubit<NewTaskStates> {
     try {
       emit(NewTaskLoadingState());
       final task = await editTaskUseCase.editTask(
-          editedTask: editedTask, taskId: taskId, accessToken: accessToken);
+          editedTask: editedTask, taskId: taskId);
       emit(UpdateTaskSuccessState(task));
     } catch (e) {
       ErrorUpdatingTaskState(e.toString());
@@ -72,10 +72,10 @@ class NewTaskCubit extends Cubit<NewTaskStates> {
   /// Emits [NewTaskLoadingState] while deleting the task.
   /// On success, emits [UpdateTaskSuccessState] with the deleted task.
   /// On failure, emits [ErrorUpdatingTaskState] with the error message.
-  Future<void> deleteTask(String taskId, String accessToken) async {
+  Future<void> deleteTask(String taskId) async {
     try {
       emit(NewTaskLoadingState());
-      final task = await deleteTaskUseCase.deleteTask(taskId, accessToken);
+      final task = await deleteTaskUseCase.deleteTask(taskId);
       emit(UpdateTaskSuccessState(task));
     } catch (e) {
       ErrorUpdatingTaskState(e.toString());

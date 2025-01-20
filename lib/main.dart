@@ -56,6 +56,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         initialRoute: getInitialRoute(token),
+        navigatorKey: RouteGenerator.navigatorKey,
         onGenerateRoute: RouteGenerator.generateRoute,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

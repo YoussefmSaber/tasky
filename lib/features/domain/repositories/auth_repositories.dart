@@ -19,15 +19,10 @@ abstract class AuthRepository {
   /// Logs out a user using the provided [refreshToken] and [accessToken].
   ///
   /// Returns a [LogoutResponse] containing the logout details.
-  Future<LogoutResponse> logout(String refreshToken, String accessToken);
+  Future<LogoutResponse> logout();
 
   /// Retrieves the profile of the user associated with the provided [accessToken].
   ///
   /// Returns a [UserData] containing the user's profile information.
-  Future<UserData> profile(String accessToken);
-
-  /// Refreshes the access token using the provided [accessToken] and [refreshToken].
-  ///
-  /// Returns a new access token as a [String].
-  Future<String> refreshToken(String accessToken, String refreshToken);
+  Future<UserData> profile();
 }

@@ -10,10 +10,10 @@ class DeleteTaskUseCase {
   /// Takes an instance of `TasksRepositoriesImpl`.
   DeleteTaskUseCase(this.tasksRepositories);
 
-  /// Deletes a task with the given [taskId] and [accessToken].
+  /// Deletes a task with the given [taskId].
   ///
   /// Returns a `Future` that completes with the deleted `TaskData`.
-  Future<TaskData> deleteTask(String taskId, String accessToken) async {
-    return await tasksRepositories.deleteTask(taskId, accessToken);
+  Future<TaskData> deleteTask(String taskId) async {
+    return await tasksRepositories.deleteTask(taskId);
   }
 }

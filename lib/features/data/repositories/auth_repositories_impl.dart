@@ -31,30 +31,17 @@ class AuthRepositoryImpl implements AuthRepository {
     return userData;
   }
 
-  /// Logs out a user with the provided [refreshToken] and [accessToken].
-  ///
   /// Returns a [LogoutResponse] indicating the result of the logout operation.
   @override
-  Future<LogoutResponse> logout(String refreshToken, String accessToken) async {
-    final logoutData = await dataSource.logout(refreshToken, accessToken);
+  Future<LogoutResponse> logout() async {
+    final logoutData = await dataSource.logout();
     return logoutData;
   }
 
-  /// Retrieves the profile of a user with the provided [accessToken].
-  ///
   /// Returns [UserData] containing the user's profile information.
   @override
-  Future<UserData> profile(String accessToken) async {
-    final profileData = await dataSource.profile(accessToken);
+  Future<UserData> profile() async {
+    final profileData = await dataSource.profile();
     return profileData;
-  }
-
-  /// Refreshes the access token using the provided [accessToken] and [refreshToken].
-  ///
-  /// Returns a new access token as a [String].
-  @override
-  Future<String> refreshToken(String accessToken, String refreshToken) async {
-    final newAccessToken = await dataSource.refreshToken(accessToken, refreshToken);
-    return newAccessToken;
   }
 }

@@ -19,11 +19,9 @@ class TodosDataSource {
   /// Takes an [AddTask] object and an [accessToken] as parameters.
   /// Returns a [TaskData] object if the task is added successfully.
   /// Throws an [Exception] if the task addition fails.
-  Future<TaskData> addTask(AddTask task, String accessToken) async {
+  Future<TaskData> addTask(AddTask task) async {
     try {
-      final response = await dioClient.dio.post(ApiEndpoints.todo,
-          data: task.toJson(),
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
+      final response = await dioClient.dio.post(ApiEndpoints.todo, data: task.toJson());
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);
       } else {
@@ -39,10 +37,9 @@ class TodosDataSource {
   /// Takes a [taskId] and an [accessToken] as parameters.
   /// Returns a [TaskData] object if the task is deleted successfully.
   /// Throws an [Exception] if the task deletion fails.
-  Future<TaskData> deleteTask(String taskId, String accessToken) async {
+  Future<TaskData> deleteTask(String taskId) async {
     try {
-      final response = await dioClient.dio.delete('${ApiEndpoints.todo}/$taskId',
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
+      final response = await dioClient.dio.delete('${ApiEndpoints.todo}/$taskId');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);
       } else {
@@ -59,11 +56,10 @@ class TodosDataSource {
   /// Returns a [TaskData] object if the task is edited successfully.
   /// Throws an [Exception] if the task editing fails.
   Future<TaskData> editTask(
-      EditTask editedTask, String taskId, String accessToken) async {
+      EditTask editedTask, String taskId) async {
     try {
       final response = await dioClient.dio.put(ApiEndpoints.todo + taskId,
-          data: editedTask,
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
+          data: editedTask);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);
       } else {
@@ -79,10 +75,9 @@ class TodosDataSource {
   /// Takes an [accessToken] as a parameter.
   /// Returns a list of [TaskData] objects if the tasks are retrieved successfully.
   /// Throws an [Exception] if the task retrieval fails.
-  Future<List<TaskData>> getListOfTasks(String accessToken, int page) async {
+  Future<List<TaskData>> getListOfTasks(int page) async {
     try {
-      final response = await dioClient.dio.get(ApiEndpoints.list + page.toString(),
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
+      final response = await dioClient.dio.get(ApiEndpoints.list + page.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> jsonData = response.data;
         final List<TaskData> tasks =
@@ -101,10 +96,9 @@ class TodosDataSource {
   /// Takes a [taskId] and an [accessToken] as parameters.
   /// Returns a [TaskData] object if the task is retrieved successfully.
   /// Throws an [Exception] if the task retrieval fails.
-  Future<TaskData> getTask(String taskId, String accessToken) async {
+  Future<TaskData> getTask(String taskId ) async {
     try {
-      final response = await dioClient.dio.get(ApiEndpoints.todo + taskId,
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
+      final response = await dioClient.dio.get(ApiEndpoints.todo + taskId);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);
       } else {
@@ -120,10 +114,9 @@ class TodosDataSource {
   /// Takes an [accessToken] and an [image] as parameters.
   /// Returns a [String] if the image is uploaded successfully.
   /// Throws an [Exception] if the image upload fails.
-  Future<String> uploadImage(String accessToken, String image) async {
+  Future<String> uploadImage(String image) async {
     try {
-      final response = await dioClient.dio.get(ApiEndpoints.upload,
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
+      final response = await dioClient.dio.get(ApiEndpoints.upload);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response.data;
       } else {

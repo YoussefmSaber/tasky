@@ -13,6 +13,7 @@ class RouteGenerator {
   static const profile = '/profile';
   static const details = '/details';
   static const addItem = '/addItem';
+  static final navigatorKey = GlobalKey<NavigatorState>();
 
   /// Private constructor to prevent instantiation.
   RouteGenerator._();
@@ -21,6 +22,8 @@ class RouteGenerator {
   ///
   /// Throws a [FormatException] if the route is not found.
   static Route<dynamic> generateRoute(RouteSettings settings) {
+
+
     switch (settings.name) {
       case onBoarding:
         return MaterialPageRoute(builder: (_) => const OnboardPage());

@@ -12,7 +12,7 @@ class ProfileUseCase {
   /// Retrieves the user profile using the provided [accessToken].
   ///
   /// Returns a [Future] that completes with [UserData].
-  Future<UserData> getProfile({required String accessToken}) async {
-    return await authRepository.profile(accessToken);
+  Future<UserData> getProfile() async {
+    return await authRepository.profile();
   }
 }

@@ -14,12 +14,10 @@ class EditTaskUseCase {
 
   /// Edits a task with the given parameters.
   ///
-  /// Takes an [EditTask] object, a [taskId], and an [accessToken].
+  /// Takes an [EditTask] object, a [taskId].
   /// Returns a [Future] that resolves to a [TaskData] object.
   Future<TaskData> editTask(
-      {required EditTask editedTask,
-      required String taskId,
-      required String accessToken}) async {
-    return await tasksRepository.editTask(editedTask, taskId, accessToken);
+      {required EditTask editedTask, required String taskId}) async {
+    return await tasksRepository.editTask(editedTask, taskId);
   }
 }

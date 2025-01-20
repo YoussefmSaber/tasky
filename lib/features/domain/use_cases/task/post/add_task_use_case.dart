@@ -11,10 +11,10 @@ class AddTaskUseCase {
   /// Takes an instance of `TasksRepositoriesImpl`.
   AddTaskUseCase(this.tasksRepositories);
 
-  /// Adds a task using the provided [task] and [accessToken].
+  /// Adds a task using the provided [task].
   ///
   /// Returns a [Future] that completes with the added [TaskData].
-  Future<TaskData> addTask(AddTask task, String accessToken) async {
-    return await tasksRepositories.addTask(task, accessToken);
+  Future<TaskData> addTask(AddTask task) async {
+    return await tasksRepositories.addTask(task);
   }
 }

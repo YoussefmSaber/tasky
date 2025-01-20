@@ -1,11 +1,9 @@
 import 'package:bloc/bloc.dart';
-import 'package:tasky/features/data/data_sources/shared_preference.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/domain/use_cases/task/get/get_tasks_use_case.dart';
 import 'package:tasky/features/domain/use_cases/task/post/delete_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/user/logout_use_case.dart';
 import 'package:tasky/features/presentation/pages/app/home/home/home_state.dart';
-import 'package:tasky/injection_container.dart';
 
 /// Cubit for managing the state of the Home page.
 // Update the HomeCubit to use background processing
@@ -33,8 +31,7 @@ class HomeCubit extends Cubit<HomeState> {
         emit(PaginationLoadingState());
       }
 
-      final accessToken = getIt<SharedPreferenceService>().getAccessToken();
-      final tasks = await tasksUseCase.getListOfTasks(accessToken!, page);
+      final tasks = await tasksUseCase.getListOfTasks(page);
 
       if (page == 1) {
         _allTasks = tasks;
@@ -84,9 +81,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> deletingTask(String taskId) async {
     try {
-      final accessToken = getIt<SharedPreferenceService>().getAccessToken();
       final deletedTask =
-          await deleteTaskUseCase.deleteTask(taskId, accessToken!);
+          await deleteTaskUseCase.deleteTask(taskId);
 
       // Update the local task list
       _allTasks.removeWhere((task) => task.id == taskId);
@@ -104,11 +100,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> logout() async {
     try {
       emit(LogoutLoadingState());
-      final accessToken = getIt<SharedPreferenceService>().getAccessToken();
-      final refresh = getIt<SharedPreferenceService>().getRefreshToken();
-      print("$accessToken, $refresh");
-      await getIt<SharedPreferenceService>().clearTokens();
-      final response = await logoutUseCase.logout(refresh!, accessToken!);
+      final response = await logoutUseCase.logout();
       emit(LogoutSuccessState(response));
     } catch (e) {
       emit(LogoutErrorState(e.toString()));

@@ -18,8 +18,8 @@ class TasksRepositoriesImpl implements TasksRepositories {
   /// Takes an `AddTask` object and an access token as parameters.
   /// Returns a `Future` of `TaskData`.
   @override
-  Future<TaskData> addTask(AddTask task, String accessToken) {
-    final res = dataSource.addTask(task, accessToken);
+  Future<TaskData> addTask(AddTask task) {
+    final res = dataSource.addTask(task);
     return res;
   }
 
@@ -28,8 +28,8 @@ class TasksRepositoriesImpl implements TasksRepositories {
   /// Takes a task ID and an access token as parameters.
   /// Returns a `Future` of `TaskData`.
   @override
-  Future<TaskData> deleteTask(String taskId, String accessToken) {
-    final res = dataSource.deleteTask(taskId, accessToken);
+  Future<TaskData> deleteTask(String taskId) {
+    final res = dataSource.deleteTask(taskId);
     return res;
   }
 
@@ -39,8 +39,8 @@ class TasksRepositoriesImpl implements TasksRepositories {
   /// Returns a `Future` of `TaskData`.
   @override
   Future<TaskData> editTask(
-      EditTask editedTask, String taskId, String accessToken) {
-    final res = dataSource.editTask(editedTask, taskId, accessToken);
+      EditTask editedTask, String taskId) {
+    final res = dataSource.editTask(editedTask, taskId);
     return res;
   }
 
@@ -50,8 +50,8 @@ class TasksRepositoriesImpl implements TasksRepositories {
   /// and a page number as a parameter.
   /// Returns a `Future` of a list of `TaskData`.
   @override
-  Future<List<TaskData>> getListOfTasks(String accessToken, int page) {
-    final res = dataSource.getListOfTasks(accessToken, page);
+  Future<List<TaskData>> getListOfTasks(int page) {
+    final res = dataSource.getListOfTasks(page);
     return res;
   }
 
@@ -60,8 +60,8 @@ class TasksRepositoriesImpl implements TasksRepositories {
   /// Takes a task ID and an access token as parameters.
   /// Returns a `Future` of `TaskData`.
   @override
-  Future<TaskData> getTask(String taskId, String accessToken) {
-    final res = dataSource.getTask(taskId, accessToken);
+  Future<TaskData> getTask(String taskId) {
+    final res = dataSource.getTask(taskId);
     return res;
   }
 
@@ -70,8 +70,8 @@ class TasksRepositoriesImpl implements TasksRepositories {
   /// Takes an access token and an image as parameters.
   /// Returns a `Future` of a string.
   @override
-  Future<String> uploadImage(String accessToken, String image) {
-    final res = dataSource.uploadImage(accessToken, image);
+  Future<String> uploadImage(String image) {
+    final res = dataSource.uploadImage(image);
     return res;
   }
 }

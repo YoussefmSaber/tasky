@@ -6,6 +6,7 @@ import 'package:tasky/features/domain/entities/auth/register_response.dart';
 import 'package:tasky/features/domain/entities/auth/user_register.dart';
 import 'package:tasky/features/domain/entities/logout/logout_response.dart';
 import 'package:tasky/features/domain/entities/user/user_data.dart';
+
 /// A data source class for handling authentication-related API calls.
 class AuthDataSource {
   final DioClient dioClient;
@@ -21,8 +22,8 @@ class AuthDataSource {
   /// Throws an [Exception] if the login fails.
   Future<LoginResponse> login(String phone, String password) async {
     try {
-      final response = await dioClient.dio
-          .post(ApiEndpoints.login, data: {'phone': phone, 'password': password});
+      final response = await dioClient.dio.post(ApiEndpoints.login,
+          data: {'phone': phone, 'password': password});
 
       if (response.statusCode == 201) {
         // success status code is 200 or 201
@@ -57,11 +58,11 @@ class AuthDataSource {
   ///
   /// Returns a [LogoutResponse] on success.
   /// Throws an [Exception] if the logout fails.
-  Future<LogoutResponse> logout(String refreshToken, String accessToken) async {
+  Future<LogoutResponse> logout() async {
     try {
-      final response = await dioClient.dio.post(ApiEndpoints.logout,
-          data: {'token': refreshToken},
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
+      final refreshToken = dioClient.preferenceService.getRefreshToken();
+      final response = await dioClient.dio
+          .post(ApiEndpoints.logout, data: {'token': refreshToken});
       if (response.statusCode == 200 || response.statusCode == 201) {
         return LogoutResponse.fromJson(response.data);
       } else {
@@ -76,31 +77,11 @@ class AuthDataSource {
   ///
   /// Returns a [UserData] on success.
   /// Throws an [Exception] if the profile retrieval fails.
-  Future<UserData> profile(String accessToken) async {
+  Future<UserData> profile() async {
     try {
-      final response = await dioClient.dio.get(ApiEndpoints.profile,
-          options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
+      final response = await dioClient.dio.get(ApiEndpoints.profile,);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return UserData.fromJson(response.data);
-      } else {
-        throw Exception('Failed to logout');
-      }
-    } on DioException catch (e) {
-      throw Exception(e.response?.data['message'] ?? 'Network error');
-    }
-  }
-
-  /// Refreshes the access token using the provided [accessToken] and [refreshToken].
-  ///
-  /// Returns the new access token as a [String] on success.
-  /// Throws an [Exception] if the token refresh fails.
-  Future<String> refreshToken(String accessToken, String refreshToken) async {
-    try {
-      final response = await dioClient.dio.get(ApiEndpoints.refreshToken,
-          queryParameters: {'token': refreshToken},
-      options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return response.data['access_token'];
       } else {
         throw Exception('Failed to logout');
       }

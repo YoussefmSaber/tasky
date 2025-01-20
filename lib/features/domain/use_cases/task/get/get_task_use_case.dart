@@ -12,9 +12,9 @@ class GetTaskUseCase {
 
   /// Retrieves a task by its ID.
   ///
-  /// Takes a [taskId] and an [accessToken] as parameters.
+  /// Takes a [taskId] as parameter.
   /// Returns a [Future] that completes with a [TaskData] object.
-  Future<TaskData> getTaskById(String taskId, String accessToken) async {
-    return await tasksRepositories.getTask(taskId, accessToken);
+  Future<TaskData> getTaskById(String taskId) async {
+    return await tasksRepositories.getTask(taskId);
   }
 }

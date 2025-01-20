@@ -9,10 +9,9 @@ class LogoutUseCase {
   /// Creates an instance of [LogoutUseCase] with the given [repository].
   LogoutUseCase(this.repository);
 
-  /// Logs out the user using the provided [refresh] and [access] tokens.
   ///
   /// Returns a [LogoutResponse] indicating the result of the logout operation.
-  Future<LogoutResponse> logout(String refresh, String access) async {
-    return await repository.logout(refresh, access);
+  Future<LogoutResponse> logout() async {
+    return await repository.logout();
   }
 }

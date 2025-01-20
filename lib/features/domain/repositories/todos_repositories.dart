@@ -5,46 +5,39 @@ import 'package:tasky/features/domain/entities/task/task_data.dart';
 /// Abstract class representing the repository for tasks.
 abstract class TasksRepositories {
   /// Fetches a list of tasks.
-  ///
-  /// [accessToken] is required for authentication.
   /// [page] is the page number for pagination.
   /// Returns a list of [TaskData].
-  Future<List<TaskData>> getListOfTasks(String accessToken, int page);
+  Future<List<TaskData>> getListOfTasks(int page);
 
   /// Fetches a specific task by its ID.
   ///
   /// [taskId] is the ID of the task to fetch.
-  /// [accessToken] is required for authentication.
   /// Returns the [TaskData] of the specified task.
-  Future<TaskData> getTask(String taskId, String accessToken);
+  Future<TaskData> getTask(String taskId);
 
   /// Adds a new task.
   ///
   /// [task] is the task to be added.
-  /// [accessToken] is required for authentication.
   /// Returns the added [TaskData].
-  Future<TaskData> addTask(AddTask task, String accessToken);
+  Future<TaskData> addTask(AddTask task);
 
   /// Edits an existing task.
   ///
   /// [editedTask] is the task with updated information.
   /// [taskId] is the ID of the task to be edited.
-  /// [accessToken] is required for authentication.
   /// Returns the edited [TaskData].
   Future<TaskData> editTask(
-      EditTask editedTask, String taskId, String accessToken);
+      EditTask editedTask, String taskId);
 
   /// Deletes a task by its ID.
   ///
   /// [taskId] is the ID of the task to be deleted.
-  /// [accessToken] is required for authentication.
   /// Returns the deleted [TaskData].
-  Future<TaskData> deleteTask(String taskId, String accessToken);
+  Future<TaskData> deleteTask(String taskId);
 
   /// Uploads an image.
   ///
-  /// [accessToken] is required for authentication.
   /// [image] is the image to be uploaded.
   /// Returns the URL of the uploaded image.
-  Future<String> uploadImage(String accessToken, String image);
+  Future<String> uploadImage(String image);
 }

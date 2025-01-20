@@ -9,10 +9,10 @@ import 'package:tasky/features/domain/use_cases/task/post/add_task_use_case.dart
 import 'package:tasky/features/domain/use_cases/task/post/delete_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/task/post/edit_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/task/post/upload_image_use_case.dart';
-import 'package:tasky/features/domain/use_cases/user/refresh_token_use_case.dart';
 import 'package:tasky/features/presentation/pages/app/profile/profile/profile_cubit.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
 import 'package:tasky/features/presentation/pages/onboarding/cubit/onboarding_cubit.dart';
+import 'package:tasky/routes.dart';
 import 'features/data/data_sources/todo/todos_data_source.dart';
 import 'features/domain/use_cases/auth/register_use_case.dart';
 import 'features/domain/use_cases/task/get/get_task_use_case.dart';
@@ -34,7 +34,10 @@ final getIt = GetIt.instance;
 /// \param sharedPrefService The shared preference service to be registered as a singleton.
 void setup(SharedPreferenceService sharedPrefService) {
   // Dio Client
-  getIt.registerLazySingleton<DioClient>(() => DioClient());
+  getIt.registerLazySingleton<DioClient>(() => DioClient(getIt(), () {
+        RouteGenerator.navigatorKey.currentState
+            ?.pushNamedAndRemoveUntil(RouteGenerator.login, (route) => false);
+      }));
 
   // Data sources
   getIt.registerLazySingleton<AuthDataSource>(() => AuthDataSource(getIt()));
@@ -52,7 +55,6 @@ void setup(SharedPreferenceService sharedPrefService) {
   getIt.registerLazySingleton(() => RegisterUseCase(getIt()));
 
   getIt.registerLazySingleton(() => LogoutUseCase(getIt()));
-  getIt.registerLazySingleton(() => RefreshTokenUseCase(getIt()));
   getIt.registerLazySingleton(() => ProfileUseCase(getIt()));
 
   // Tasks

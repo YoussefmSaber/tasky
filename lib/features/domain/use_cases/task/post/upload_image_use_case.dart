@@ -15,7 +15,7 @@ class UploadImageUseCase {
   /// \[accessToken\] - The access token for authentication.
   /// \[image\] - The image to be uploaded.
   /// Returns a \[Future\] that completes with the URL of the uploaded image.
-  Future<String> uploadImage(String accessToken, String image) async {
-    return await tasksRepositories.uploadImage(accessToken, image);
+  Future<String> uploadImage(String image) async {
+    return await tasksRepositories.uploadImage(image);
   }
 }

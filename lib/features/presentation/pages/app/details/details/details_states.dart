@@ -17,6 +17,10 @@ class DetailsTaskDeletedState extends DetailsState {
   DetailsTaskDeletedState(this.deletedTask);
 }
 
+class DetailsTaskModifiedState extends DetailsState {}
+class DetailsTaskSavingState extends DetailsState {}
+class DetailsTaskSavedState extends DetailsState {}
+
 /// State representing the successful retrieval of details.
 class GetDetailsSuccessState extends DetailsState {
   /// The retrieved task data.

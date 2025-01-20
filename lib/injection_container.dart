@@ -35,8 +35,8 @@ final getIt = GetIt.instance;
 void setup(SharedPreferenceService sharedPrefService) {
   // Dio Client
   getIt.registerLazySingleton<DioClient>(() => DioClient(
-        preferenceService: getIt(),
-        onLogout: () {
+        getIt(),
+         () {
           RouteGenerator.navigatorKey.currentState
               ?.pushNamedAndRemoveUntil(RouteGenerator.login, (route) => false);
         },

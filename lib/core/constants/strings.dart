@@ -39,4 +39,6 @@ class Strings {
   static const dueDate = "Due date";
   static const chooseDueDate = "choose due date...";
   static const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjQ5ZmIyZWVmMGJmOTNkZDAwNzExYmEiLCJpYXQiOjE3MzYzNDkwMjksImV4cCI6MTczNjM0OTYyOX0.EqJo082izc1fAZclN5WQYLWvqSZ1-uFqC7Ibm2GA15c";
+
+  static String editTask = "Editing Task";
 }

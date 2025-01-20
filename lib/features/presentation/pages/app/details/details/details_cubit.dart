@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tasky/features/domain/entities/task/edit_task.dart';
+import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/domain/use_cases/task/get/get_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/task/post/delete_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/task/post/edit_task_use_case.dart';
@@ -31,6 +33,20 @@ class DetailsCubit extends Cubit<DetailsState> {
       emit(GetDetailsSuccessState(task));
     } catch (e) {
       DetailsErrorState(e.toString());
+    }
+  }
+
+  void markTaskAsModified() {
+    emit(DetailsTaskModifiedState());
+  }
+
+  Future<void> saveTask(EditTask modifiedTask, String taskId) async {
+    try {
+      emit(DetailsTaskSavingState());
+      await editTaskUseCase.editTask(editedTask: modifiedTask, taskId: taskId);
+      emit(DetailsTaskSavedState());
+    } catch (e) {
+      emit(DetailsErrorState(e.toString()));
     }
   }
 

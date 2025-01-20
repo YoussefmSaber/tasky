@@ -100,7 +100,7 @@ class TodosDataSource {
   /// Throws an [Exception] if the task retrieval fails.
   Future<TaskData> getTask(String taskId ) async {
     try {
-      final response = await dioClient.dio.get(ApiEndpoints.todo + taskId);
+      final response = await dioClient.dio.get('${ApiEndpoints.todo}/$taskId');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);
       } else {

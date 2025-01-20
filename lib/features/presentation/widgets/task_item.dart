@@ -25,7 +25,7 @@ class TaskItem extends StatelessWidget {
         color: Colors.transparent,
         child: ListTile(
           onTap: () => Navigator.of(context)
-              .pushNamed(RouteGenerator.details, arguments: taskData),
+              .pushNamed(RouteGenerator.details, arguments: taskData.id),
           contentPadding: EdgeInsets.zero,
           leading: ClipOval(
             child: Image.network(

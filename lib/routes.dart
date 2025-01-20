@@ -38,9 +38,9 @@ class RouteGenerator {
       case profile:
         return MaterialPageRoute(builder: (_) => const ProfilePage());
       case details:
-        final taskData = settings.arguments as TaskData;
+        final taskId = settings.arguments as String;
         return MaterialPageRoute(
-            builder: (_) => DetailsPage(taskData: taskData));
+            builder: (_) => DetailsPage(taskId: taskId));
       case addItem:
         return MaterialPageRoute(builder: (_) => const NewTaskPage());
       default:

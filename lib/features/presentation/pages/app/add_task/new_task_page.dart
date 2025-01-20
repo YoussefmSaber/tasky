@@ -186,9 +186,13 @@ class _NewTaskPageState extends State<NewTaskPage> {
                     _buildPrioritySelector(),
                     _buildDateSelector(),
                     const SizedBox(height: 32),
-                    SignButton(
-                      text: 'Add Task',
-                      onTap: () => _addTask(context),
+                    Container(
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: SignButton(
+                        text: 'Add Task',
+                        onTap: () => _addTask(context),
+                      ),
                     ),
                   ],
                 );

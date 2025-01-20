@@ -26,6 +26,7 @@ dependencies:
   json_annotation: ^4.9.0         # For JSON serialization
   hydrated_bloc: ^10.0.0           # BLoC state persistence with hydration
   flutter_launcher_icons: ^0.14.3 # Launcher icon generation
+  flutter_native_splash: ^2.4.4   # Create splash screen
   data_connection_checker_nulls: ^0.0.2  # Network connection checker
 
   # UI Libraries
@@ -59,12 +60,19 @@ dev_dependencies:
   build_runner: ^2.4.14           # Code generation for json_serializable
 
 flutter_launcher_icons:
-  android: true
+  android: "launcher_icon"
   ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/icon.png"
+  min_sdk_android: 21
   windows:
     generate: true
-    icon_size: 128
-  image_path: "assets/images/icon.png"
+    image_path: "assets/images/icon.png"
+    icon_size: 48
+
+flutter_native_splash:
+  color: "#5f33e1"
+  image: "assets/images/icon.png"
 
 flutter:
   uses-material-design: true

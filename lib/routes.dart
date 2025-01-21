@@ -5,6 +5,8 @@ import 'package:tasky/features/presentation/pages/app/edit_task/edit_task_page.d
 import 'package:tasky/features/presentation/pages/auth/auth_pages.dart';
 import 'package:tasky/features/presentation/pages/onboarding/onboard_page.dart';
 
+import 'features/presentation/pages/app/qr_scan/qr_scanner_page.dart';
+
 /// A class that generates routes for the application.
 class RouteGenerator {
   static const onBoarding = '/';
@@ -15,6 +17,7 @@ class RouteGenerator {
   static const details = '/details';
   static const addItem = '/addItem';
   static const editTask = '/editTask';
+  static const qrScanner = '/qrScanner';
   static final navigatorKey = GlobalKey<NavigatorState>();
 
   /// Private constructor to prevent instantiation.
@@ -45,6 +48,8 @@ class RouteGenerator {
       case editTask:
         final task = settings.arguments as TaskData;
         return MaterialPageRoute(builder: (_) => EditTaskPage(task: task));
+        case qrScanner:
+        return MaterialPageRoute(builder: (_) => const QRScannerPage());
       default:
         throw FormatException("Route not found");
     }

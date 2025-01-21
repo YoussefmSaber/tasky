@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
 import 'package:tasky/core/core.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
+import 'package:tasky/features/presentation/pages/app/qr_scan/qr_scanner_page.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
 import 'package:tasky/routes.dart';
 
@@ -164,7 +165,21 @@ class _HomePageState extends State<HomePage> {
             children: [
               FloatingActionButton(
                 heroTag: 'QR',
-                onPressed: () {},
+                onPressed: () async {
+                  final scannedId = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const QRScannerPage(),
+                    ),
+                  );
+
+                  if (scannedId != null) {
+                    Navigator.of(context).pushNamed(
+                      RouteGenerator.details,
+                      // Define this route in your route generator
+                      arguments: scannedId, // Pass the scanned ID as arguments
+                    );
+                  }
+                },
                 shape: const CircleBorder(),
                 mini: true,
                 child: Icon(

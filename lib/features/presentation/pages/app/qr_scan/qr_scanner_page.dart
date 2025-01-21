@@ -1,22 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-class QRScannerPage extends StatefulWidget {
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:tasky/routes.dart';
+
+class QRScannerPage extends StatelessWidget {
   const QRScannerPage({super.key});
-
-  @override
-  State<QRScannerPage> createState() => _QRScannerScreenState();
-}
-
-class _QRScannerScreenState extends State<QRScannerPage> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,19 +12,77 @@ class _QRScannerScreenState extends State<QRScannerPage> {
       appBar: AppBar(
         title: const Text('Scan QR Code'),
       ),
-      body: QRView(
-        key: qrKey,
-        onQRViewCreated: _onQRViewCreated,
+      body: MobileScanner(
+        overlayBuilder: (context, constraints) {
+          return QRScannerOverlay(
+            borderColor: Colors.red,
+            borderWidth: 3,
+            overlayColor: Colors.black.withOpacity(0.5),
+          );
+        },
+        onDetect: (BarcodeCapture barcodeCapture) {
+          final List<Barcode> barcodes = barcodeCapture.barcodes;
+
+          // Iterate through all detected barcodes
+          for (final barcode in barcodes) {
+            if (barcode.rawValue != null) {
+              final String code = barcode.rawValue!;
+              // Navigate with the scanned code
+              Navigator.of(context)
+                  .popAndPushNamed(RouteGenerator.details, arguments: code);
+              break; // Process only the first valid QR code
+            }
+          }
+        },
       ),
     );
   }
+}
 
-  void _onQRViewCreated(QRViewController qrController) {
-    controller = qrController;
+class QRScannerOverlay extends StatelessWidget {
+  final Color borderColor;
+  final double borderWidth;
+  final Color overlayColor;
 
-    qrController.scannedDataStream.listen((scanData) {
-      // Navigate to details screen with the scanned ID
-      Navigator.of(context).pop(scanData.code); // Pass the scanned ID back
-    });
+  const QRScannerOverlay({
+    Key? key,
+    required this.borderColor,
+    required this.borderWidth,
+    required this.overlayColor,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double width = constraints.maxWidth * 0.8;
+        final double height = constraints.maxHeight * 0.4;
+
+        return Stack(
+          children: [
+            // Overlay background
+            Container(
+              color: overlayColor,
+            ),
+            // Transparent cutout for the scanner
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(
+                    color: borderColor,
+                    width: borderWidth,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

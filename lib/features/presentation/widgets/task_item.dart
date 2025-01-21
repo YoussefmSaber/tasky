@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:tasky/core/core.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/presentation/pages/app/home/home/home_cubit.dart';
@@ -63,7 +64,7 @@ class TaskItem extends StatelessWidget {
                 children: [
                   PriorityTag(priority: taskData.priority!),
                   Text(
-                    taskData.createdAt!,
+                    formatIsoDate(taskData.createdAt!),
                     style: FontStyles.disableLabelStyle,
                   )
                 ],
@@ -128,5 +129,13 @@ class TaskItem extends StatelessWidget {
             },
           ),
         ));
+  }
+
+  String formatIsoDate(String isoDate) {
+    // Parse the ISO 8601 string to a DateTime object
+    DateTime dateTime = DateTime.parse(isoDate);
+
+    // Format the DateTime object to "21 January 2025"
+    return DateFormat("d MMMM yyyy").format(dateTime);
   }
 }

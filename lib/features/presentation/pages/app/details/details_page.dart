@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tasky/core/core.dart';
 import 'package:tasky/features/presentation/pages/app/details/details/details_cubit.dart';
@@ -110,7 +111,7 @@ class _DetailsPageState extends State<DetailsPage> {
                               SizedBox(
                                 height: 16,
                               ),
-                              DisplayDate(date: state.tasks.createdAt!),
+                              DisplayDate(date: formatIsoDate(state.tasks.createdAt!)),
                               SizedBox(
                                 height: 16,
                               ),
@@ -198,5 +199,13 @@ class _DetailsPageState extends State<DetailsPage> {
         );
       }
     });
+  }
+
+  String formatIsoDate(String isoDate) {
+    // Parse the ISO 8601 string to a DateTime object
+    DateTime dateTime = DateTime.parse(isoDate);
+
+    // Format the DateTime object to "21 January 2025"
+    return DateFormat("d MMMM yyyy").format(dateTime);
   }
 }

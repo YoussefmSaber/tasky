@@ -28,7 +28,6 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocConsumer<DetailsCubit, DetailsState>(builder: (context, state) {
       return Scaffold(
           appBar: AppBar(
@@ -42,26 +41,32 @@ class _DetailsPageState extends State<DetailsPage> {
               style: FontStyles.textTitleStyle,
             ),
             actions: [
-              PopupMenuButton(
-                  itemBuilder: (context) => [
-                        PopupMenuItem(
-                            child: TextButton(
-                                onPressed: () {},
-                                child: Text(
-                                  "Edit",
-                                  style: FontStyles.menuTextStyle,
-                                ))),
-                        PopupMenuItem(
-                          child: TextButton(
-                              onPressed: () {
-                                context.read<DetailsCubit>().deletingTask();
-                              },
-                              child: Text(
-                                "Delete",
-                                style: FontStyles.errorMenuTextStyle,
-                              )),
-                        )
-                      ])
+              state is GetDetailsSuccessState
+                  ? PopupMenuButton(
+                      itemBuilder: (context) => [
+                            PopupMenuItem(
+                                child: TextButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, RouteGenerator.editTask,
+                                          arguments: state.tasks);
+                                    },
+                                    child: Text(
+                                      "Edit",
+                                      style: FontStyles.menuTextStyle,
+                                    ))),
+                            PopupMenuItem(
+                              child: TextButton(
+                                  onPressed: () {
+                                    context.read<DetailsCubit>().deletingTask();
+                                  },
+                                  child: Text(
+                                    "Delete",
+                                    style: FontStyles.errorMenuTextStyle,
+                                  )),
+                            )
+                          ])
+                  : Container()
             ],
           ),
           body: Padding(

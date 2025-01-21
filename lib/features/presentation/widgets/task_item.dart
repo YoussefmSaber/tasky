@@ -8,13 +8,11 @@ import 'package:tasky/routes.dart';
 
 class TaskItem extends StatelessWidget {
   final TaskData taskData;
-  final Function(String) onEdit;
   final Function(String) onDelete;
 
   const TaskItem({
     super.key,
     required this.taskData,
-    required this.onEdit,
     required this.onDelete,
   });
 
@@ -85,7 +83,8 @@ class TaskItem extends StatelessWidget {
             ],
             onSelected: (value) {
               if (value == 'edit') {
-                onEdit(taskData.id!);
+                Navigator.of(context)
+                    .pushNamed(RouteGenerator.editTask, arguments: taskData);
               } else if (value == 'delete') {
                 showDialog(
                     context: context,

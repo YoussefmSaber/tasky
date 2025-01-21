@@ -1,15 +1,14 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:tasky/core/core.dart';
 import 'package:tasky/features/domain/entities/task/add_task.dart';
 import 'package:tasky/features/presentation/pages/app/add_task/new_task/new_task_cubit.dart';
 import 'package:tasky/features/presentation/pages/app/add_task/new_task/new_task_states.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
+import 'package:tasky/features/shared/utils/image_picker_service.dart';
 import 'package:tasky/routes.dart';
 
 class NewTaskPage extends StatefulWidget {
@@ -22,77 +21,20 @@ class NewTaskPage extends StatefulWidget {
 class _NewTaskPageState extends State<NewTaskPage> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
-  final ImagePicker _picker = ImagePicker();
+  final _imagePickerService = ImagePickerService();
   File? _selectedImage;
   String? _selectedDate;
   String? _selectedPriority;
 
-  Future<void> _pickDesktopImage() async {
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowMultiple: false,
-      );
-      if (result != null && result.files.single.path != null) {
-        setState(() => _selectedImage = File(result.files.single.path!));
-      }
-    } catch (e) {
-      _showSnackbar('Error picking image: $e');
-    }
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    try {
-      final XFile? image = await _picker.pickImage(source: source);
-      if (image != null) {
-        setState(() => _selectedImage = File(image.path));
-      }
-    } catch (e) {
-      _showSnackbar('Error selecting image: $e');
-    }
-  }
-
-  void _showImagePickerDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Image'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (Platform.isWindows)
-                ListTile(
-                  leading: const Icon(Icons.folder),
-                  title: const Text('Choose from Computer'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickDesktopImage();
-                  },
-                ),
-              if (!Platform.isWindows) ...[
-                ListTile(
-                  leading: const Icon(Icons.photo_library),
-                  title: const Text('Choose from Gallery'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(ImageSource.gallery);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.camera_alt),
-                  title: const Text('Take a Photo'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImage(ImageSource.camera);
-                  },
-                ),
-              ],
-            ],
-          ),
-        );
-      },
+  Future<void> _selectImage() async {
+    final File? image = await _imagePickerService.showImagePickerDialog(
+      context,
+      onError: _showSnackbar,
     );
+
+    if (image != null) {
+      setState(() => _selectedImage = image);
+    }
   }
 
   void _showSnackbar(String message) {
@@ -154,7 +96,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
                     SizedBox(
                       width: double.infinity,
                       child: InkWell(
-                        onTap: () => _showImagePickerDialog(context),
+                        onTap: () => _selectImage(),
                         child: _selectedImage != null
                             ? Stack(
                                 children: [

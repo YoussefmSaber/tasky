@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/presentation/pages/app/app_pages.dart';
+import 'package:tasky/features/presentation/pages/app/edit_task/edit_task_page.dart';
 import 'package:tasky/features/presentation/pages/auth/auth_pages.dart';
 import 'package:tasky/features/presentation/pages/onboarding/onboard_page.dart';
 
@@ -13,6 +14,7 @@ class RouteGenerator {
   static const profile = '/profile';
   static const details = '/details';
   static const addItem = '/addItem';
+  static const editTask = '/editTask';
   static final navigatorKey = GlobalKey<NavigatorState>();
 
   /// Private constructor to prevent instantiation.
@@ -22,8 +24,6 @@ class RouteGenerator {
   ///
   /// Throws a [FormatException] if the route is not found.
   static Route<dynamic> generateRoute(RouteSettings settings) {
-
-
     switch (settings.name) {
       case onBoarding:
         return MaterialPageRoute(builder: (_) => const OnboardPage());
@@ -39,10 +39,12 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const ProfilePage());
       case details:
         final taskId = settings.arguments as String;
-        return MaterialPageRoute(
-            builder: (_) => DetailsPage(taskId: taskId));
+        return MaterialPageRoute(builder: (_) => DetailsPage(taskId: taskId));
       case addItem:
         return MaterialPageRoute(builder: (_) => const NewTaskPage());
+      case editTask:
+        final task = settings.arguments as TaskData;
+        return MaterialPageRoute(builder: (_) => EditTaskPage(task: task));
       default:
         throw FormatException("Route not found");
     }

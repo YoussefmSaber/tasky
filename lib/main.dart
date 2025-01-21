@@ -5,6 +5,7 @@ import 'package:tasky/features/data/data_sources/shared_preference.dart';
 import 'package:tasky/features/presentation/manager/bloc_observer.dart';
 import 'package:tasky/features/presentation/pages/app/add_task/new_task/new_task_cubit.dart';
 import 'package:tasky/features/presentation/pages/app/details/details/details_cubit.dart';
+import 'package:tasky/features/presentation/pages/app/edit_task/cubit/edit_task_cubit.dart';
 import 'package:tasky/features/presentation/pages/app/profile/profile/profile_cubit.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
 import 'package:tasky/features/presentation/pages/onboarding/cubit/onboarding_cubit.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => getIt<NewTaskCubit>()),
         BlocProvider(create: (context) => getIt<DetailsCubit>()),
         BlocProvider(create: (context) => getIt<ProfileCubit>()),
+        BlocProvider(create: (context) => getIt<EditTaskCubit>()),
       ],
       child: MaterialApp(
         initialRoute: getInitialRoute(token),

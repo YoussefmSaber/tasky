@@ -24,7 +24,7 @@ class RegisterCubit extends Cubit<RegisterState> {
     try {
       emit(RegisterLoading());
       final userTokens = await registerUseCase.register(userData);
-      if (userTokens != null && userTokens.accessToken != null) {
+      if (userTokens.refreshToken != null && userTokens.accessToken != null) {
         await getIt<SharedPreferenceService>()
             .saveAccessToken(userTokens.accessToken!);
         await getIt<SharedPreferenceService>()

@@ -54,7 +54,6 @@ class _InfiniteScrollPaginationPageState
         builderDelegate: PagedChildBuilderDelegate<TaskData>(
           itemBuilder: (context, taskData, index) => TaskItem(
             taskData: taskData,
-            onEdit: (id) {},
             onDelete: (id) {
               context.read<HomeCubit>().deletingTask(id);
             },

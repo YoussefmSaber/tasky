@@ -9,6 +9,7 @@ import 'package:tasky/features/domain/use_cases/task/post/add_task_use_case.dart
 import 'package:tasky/features/domain/use_cases/task/post/delete_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/task/post/edit_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/task/post/upload_image_use_case.dart';
+import 'package:tasky/features/presentation/pages/app/edit_task/cubit/edit_task_cubit.dart';
 import 'package:tasky/features/presentation/pages/app/profile/profile/profile_cubit.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
 import 'package:tasky/features/presentation/pages/onboarding/cubit/onboarding_cubit.dart';
@@ -36,7 +37,7 @@ void setup(SharedPreferenceService sharedPrefService) {
   // Dio Client
   getIt.registerLazySingleton<DioClient>(() => DioClient(
         getIt(),
-         () {
+        () {
           RouteGenerator.navigatorKey.currentState
               ?.pushNamedAndRemoveUntil(RouteGenerator.login, (route) => false);
         },
@@ -87,6 +88,7 @@ void setup(SharedPreferenceService sharedPrefService) {
       () => DetailsCubit(getIt(), getIt(), getIt()));
   getIt.registerLazySingleton<NewTaskCubit>(
       () => NewTaskCubit(getIt(), getIt(), getIt()));
+  getIt.registerLazySingleton<EditTaskCubit>(() => EditTaskCubit(getIt()));
 
   getIt.registerLazySingleton<OnboardingCubit>(() => OnboardingCubit(getIt()));
 

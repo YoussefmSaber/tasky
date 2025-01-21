@@ -1,21 +1,25 @@
 import 'package:dio/dio.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:tasky/core/constants/endpoints.dart';
 import 'package:tasky/features/data/data_sources/shared_preference.dart';
-
 class DioClient {
   late Dio dio;
   final SharedPreferenceService preferenceService;
   final Function() onLogout;
-  final _pendingRequests = <Future<void>>[];
+  bool _isRefreshing = false;
+  final List<Future<void>> _pendingRequests = [];
 
   DioClient(this.preferenceService, this.onLogout) {
-    dio = Dio(BaseOptions(
+    dio = Dio(
+      BaseOptions(
         baseUrl: "https://todo.iraqsapp.com",
-        connectTimeout: Duration(seconds: 30),
-        receiveTimeout: Duration(seconds: 30),
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
         headers: {
           'Content-Type': 'application/json',
-        }));
+        },
+      ),
+    );
 
     dio.interceptors.addAll([
       LogInterceptor(responseBody: true),
@@ -26,59 +30,53 @@ class DioClient {
   Interceptor _createAuthInterceptor() {
     return InterceptorsWrapper(
       onRequest: (options, handler) async {
+        // Don't add auth header for refresh token requests
+        if (options.path == ApiEndpoints.refreshToken) {
+          return handler.next(options);
+        }
+
         final token = preferenceService.getAccessToken();
         if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
+          if (_isTokenExpired(token) && !_isRefreshing) {
+            try {
+              await _refreshToken();
+              // Get the new token after refresh
+              final newToken = preferenceService.getAccessToken();
+              options.headers['Authorization'] = 'Bearer $newToken';
+            } catch (e) {
+              // If refresh fails, trigger logout
+              await preferenceService.clearTokens();
+              onLogout();
+              return handler.reject(
+                DioException(
+                  requestOptions: options,
+                  error: 'Token refresh failed',
+                ),
+              );
+            }
+          } else {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
         }
         return handler.next(options);
       },
       onError: (error, handler) async {
-        if (error.response?.statusCode == 401) {
-          // Store the failed request options
-          final originalRequest = error.requestOptions;
+        if (error.response?.statusCode == 401 && !_isRefreshing) {
+          _isRefreshing = true;
 
           try {
-            // Try to refresh the token
             final newToken = await _refreshToken();
+            _isRefreshing = false;
 
-            // Update the authorization header with new token
+            // Retry the original request with new token
+            final originalRequest = error.requestOptions;
             originalRequest.headers['Authorization'] = 'Bearer $newToken';
-
-            // Retry the original request
             final retryResponse = await dio.fetch(originalRequest);
             return handler.resolve(retryResponse);
           } catch (e) {
-            // If token refresh fails, store the failed request
-            late final Future<void> pendingRequest;
-
-            pendingRequest = Future<void>(() async {
-              try {
-                // Wait for some time before retrying
-                await Future.delayed(Duration(seconds: 2));
-
-                // Get fresh token
-                final freshToken = preferenceService.getAccessToken();
-                if (freshToken == null) {
-                  throw Exception('No token available');
-                }
-
-                // Update authorization header
-                originalRequest.headers['Authorization'] = 'Bearer $freshToken';
-
-                // Retry the request
-                final response = await dio.fetch(originalRequest);
-                handler.resolve(response);
-              } catch (retryError) {
-                // If retry fails, trigger logout
-                await preferenceService.clearTokens();
-                onLogout();
-                handler.reject(error);
-              } finally {
-                _pendingRequests.remove(pendingRequest);
-              }
-            });
-
-            _pendingRequests.add(pendingRequest);
+            _isRefreshing = false;
+            await preferenceService.clearTokens();
+            onLogout();
             return handler.reject(error);
           }
         }
@@ -89,16 +87,16 @@ class DioClient {
 
   Future<String> _refreshToken() async {
     final refreshToken = preferenceService.getRefreshToken();
-    final currentToken = preferenceService.getAccessToken();
-
-    if (refreshToken == null || currentToken == null) {
+    if (refreshToken == null) {
       throw Exception('No refresh token available');
     }
 
     try {
-      final response = await dio.get(ApiEndpoints.refreshToken,
-          queryParameters: {'token': refreshToken},
-          options: Options(headers: {'Authorization': 'Bearer $currentToken'}));
+      // Don't include the expired token in the refresh request
+      final response = await dio.get(
+        ApiEndpoints.refreshToken,
+        queryParameters: {'token': refreshToken},
+      );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final newToken = response.data['access_token'];
@@ -108,14 +106,23 @@ class DioClient {
         throw Exception('Failed to refresh token');
       }
     } catch (e) {
-      throw Exception('Failed to refresh token');
+      throw Exception('Failed to refresh token: $e');
     }
   }
 
-  /// Returns true if there are pending requests being retried
+  bool _isTokenExpired(String token) {
+    try {
+      final expirationDate = JwtDecoder.getExpirationDate(token);
+      // Add some buffer time (e.g., 30 seconds) to prevent edge cases
+      return DateTime.now().isAfter(expirationDate.subtract(Duration(seconds: 30)));
+    } catch (e) {
+      // If we can't decode the token, consider it expired
+      return true;
+    }
+  }
+
   bool get hasRetryingRequests => _pendingRequests.isNotEmpty;
 
-  /// Waits for all retrying requests to complete
   Future<void> waitForRetryingRequests() async {
     if (_pendingRequests.isEmpty) return;
     await Future.wait(_pendingRequests);

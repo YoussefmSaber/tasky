@@ -19,6 +19,7 @@ dependencies:
   intl: ^0.20.1                   # For internationalization
   sqflite: ^2.4.1                 # Local SQLite database
   shared_preferences: ^2.3.5      # Local key-value storage
+  jwt_decoder: ^2.0.1             # JWT token decoder
 
   # Utilities
   get_it: ^8.0.3                  # Dependency injection

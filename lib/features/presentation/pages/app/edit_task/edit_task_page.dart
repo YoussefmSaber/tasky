@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tasky/core/constants/colors.dart';
 import 'package:tasky/core/constants/strings.dart';
 import 'package:tasky/core/images/icons.dart';
@@ -11,7 +13,8 @@ import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/presentation/pages/app/edit_task/cubit/edit_task_cubit.dart';
 import 'package:tasky/features/presentation/pages/app/edit_task/cubit/edit_task_states.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
-import 'package:tasky/features/shared/utils/image_picker_service.dart';
+
+typedef ErrorCallback = void Function(String message);
 
 class EditTaskPage extends StatefulWidget {
   final TaskData task;
@@ -27,9 +30,10 @@ class _EditTaskPageState extends State<EditTaskPage> {
   late String editedState;
   late TextEditingController titleController;
   late TextEditingController descController;
-  final _imagePickerService = ImagePickerService();
   File? _selectedImage;
   bool _hasUnsavedChanges = false;
+
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -39,7 +43,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
     editedPriority = widget.task.priority!;
     editedState = widget.task.status!;
 
-    // Add listeners to track changes
     titleController.addListener(_onFieldChanged);
     descController.addListener(_onFieldChanged);
   }
@@ -80,14 +83,16 @@ class _EditTaskPageState extends State<EditTaskPage> {
             child: Text('No'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
+              final cubit = context.read<EditTaskCubit>();
               context.read<EditTaskCubit>().saveTask(
                     EditTask(
                       title: titleController.text.trim(),
                       desc: descController.text.trim(),
                       priority: editedPriority,
                       status: editedState,
-                      image: _selectedImage?.path ?? widget.task.image,
+                      image: await cubit.uploadImage(_selectedImage!) ??
+                          widget.task.image!,
                     ),
                     widget.task.id!,
                   );
@@ -101,20 +106,73 @@ class _EditTaskPageState extends State<EditTaskPage> {
     );
   }
 
-  Future<void> _selectImage() async {
-    final File? image = await _imagePickerService.showImagePickerDialog(
-      context,
-      onError: _showSnackbar,
-    );
-
-    if (image != null) {
-      setState(() {
-        _selectedImage = image;
-        _hasUnsavedChanges = true; // Mark as unsaved changes
-      });
+  Future<void> _pickDesktopImage() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+      );
+      if (result != null && result.files.single.path != null) {
+        setState(() => _selectedImage = File(result.files.single.path!));
+      }
+    } catch (e) {
+      _showSnackbar('Error picking image: $e');
     }
   }
 
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(source: source);
+      if (image != null) {
+        setState(() => _selectedImage = File(image.path));
+      }
+    } catch (e) {
+      _showSnackbar('Error selecting image: $e');
+    }
+  }
+
+  void _showImagePickerDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Image'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (Platform.isWindows)
+                ListTile(
+                  leading: const Icon(Icons.folder),
+                  title: const Text('Choose from Computer'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickDesktopImage();
+                  },
+                ),
+              if (!Platform.isWindows) ...[
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Choose from Gallery'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Take a Photo'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   bool _validateInputs() {
     if (titleController.text.trim().isEmpty) {
@@ -160,52 +218,37 @@ class _EditTaskPageState extends State<EditTaskPage> {
                         borderRadius: BorderRadius.circular(16),
                         child: _selectedImage != null
                             ? Image.file(
-                          _selectedImage!,
-                          height: 250,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 250,
-                              width: double.infinity,
-                              color: AppColors.secondaryTextColor,
-                              child: Icon(Icons.error),
-                            );
-                          },
-                        )
-                            : (widget.task.image != null
-                            ? Image.network(
-                          "https://todo.iraqsapp.com/images/${widget.task.image}",
-                          height: 250,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) {
-                              return child;
-                            }
-                            return Container(
-                              height: 250,
-                              width: double.infinity,
-                              color: AppColors.secondaryTextColor,
-                              child: Center(
-                                child: CircularProgressIndicator(),
+                                _selectedImage!,
+                                height: 250,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                "https://todo.iraqsapp.com/images/${widget.task.image!}",
+                                height: 250,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Container(
+                                    height: 250,
+                                    width: double.infinity,
+                                    color: AppColors.secondaryTextColor,
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    height: 250,
+                                    width: double.infinity,
+                                    color: AppColors.secondaryTextColor,
+                                    child: Icon(Icons.error),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 250,
-                              width: double.infinity,
-                              color: AppColors.secondaryTextColor,
-                              child: Icon(Icons.error),
-                            );
-                          },
-                        )
-                            : Container(
-                          height: 250,
-                          width: double.infinity,
-                          color: AppColors.secondaryTextColor,
-                        )),
                       ),
                       Positioned(
                         top: 8,
@@ -213,27 +256,30 @@ class _EditTaskPageState extends State<EditTaskPage> {
                         child: CircleAvatar(
                           backgroundColor: Colors.white,
                           child: IconButton(
-                            onPressed: _selectImage,
+                            onPressed: () => _showImagePickerDialog(context),
                             icon: Icon(Icons.edit, size: 18.0),
                           ),
                         ),
                       ),
-                      if (_selectedImage != null)
-                        Positioned(
-                          bottom: 16,
-                          right: 16,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            child: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _selectedImage = null; // Clear selected image
-                                });
-                              },
-                              icon: Icon(Icons.remove, size: 18.0),
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedImage = null;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.remove,
+                              size: 18.0,
+                              color: Colors.redAccent,
                             ),
                           ),
                         ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 16),
@@ -280,7 +326,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
                     width: double.infinity,
                     child: SignButton(
                       text: "Update Task",
-                      onTap: () {
+                      onTap: () async {
                         if (_validateInputs()) {
                           context.read<EditTaskCubit>().saveTask(
                                 EditTask(
@@ -288,8 +334,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
                                   desc: descController.text.trim(),
                                   priority: editedPriority,
                                   status: editedState,
-                                  image: _selectedImage?.path ??
-                                      widget.task.image,
+                                  image: _selectedImage != null
+                                      ? await context
+                                              .read<EditTaskCubit>()
+                                              .uploadImage(_selectedImage!)
+                                      : widget.task.image!,
                                 ),
                                 widget.task.id!,
                               );

@@ -88,7 +88,8 @@ void setup(SharedPreferenceService sharedPrefService) {
       () => DetailsCubit(getIt(), getIt(), getIt()));
   getIt.registerLazySingleton<NewTaskCubit>(
       () => NewTaskCubit(getIt(), getIt(), getIt()));
-  getIt.registerLazySingleton<EditTaskCubit>(() => EditTaskCubit(getIt()));
+  getIt.registerLazySingleton<EditTaskCubit>(
+      () => EditTaskCubit(getIt(), getIt()));
 
   getIt.registerLazySingleton<OnboardingCubit>(() => OnboardingCubit(getIt()));
 

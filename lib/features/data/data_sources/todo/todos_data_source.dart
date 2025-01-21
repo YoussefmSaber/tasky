@@ -60,7 +60,7 @@ class TodosDataSource {
   Future<TaskData> editTask(
       EditTask editedTask, String taskId) async {
     try {
-      final response = await dioClient.dio.put(ApiEndpoints.todo + taskId,
+      final response = await dioClient.dio.put("${ApiEndpoints.todo}/$taskId",
           data: editedTask);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);

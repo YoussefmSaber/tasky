@@ -14,9 +14,11 @@ import 'package:tasky/routes.dart';
 
 class NewTaskPage extends StatefulWidget {
   const NewTaskPage({super.key});
+
   @override
   State<NewTaskPage> createState() => _NewTaskPageState();
 }
+
 class _NewTaskPageState extends State<NewTaskPage> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
@@ -24,6 +26,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
   File? _selectedImage;
   String? _selectedDate;
   String? _selectedPriority;
+
   Future<void> _pickDesktopImage() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -37,6 +40,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
       _showSnackbar('Error picking image: $e');
     }
   }
+
   Future<void> _pickImage(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(source: source);
@@ -47,6 +51,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
       _showSnackbar('Error selecting image: $e');
     }
   }
+
   void _showImagePickerDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -89,10 +94,12 @@ class _NewTaskPageState extends State<NewTaskPage> {
       },
     );
   }
+
   void _showSnackbar(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
+
   Future<void> _addTask(BuildContext context) async {
     if (_selectedImage == null) {
       _showSnackbar('Please select an image.');
@@ -111,13 +118,14 @@ class _NewTaskPageState extends State<NewTaskPage> {
         ));
         Navigator.of(context).pushNamedAndRemoveUntil(
           RouteGenerator.home,
-              (route) => false,
+          (route) => false,
         );
       }
     } catch (e) {
       _showSnackbar('Error adding task: $e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,18 +157,18 @@ class _NewTaskPageState extends State<NewTaskPage> {
                         onTap: () => _showImagePickerDialog(context),
                         child: _selectedImage != null
                             ? Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Image.file(
-                                _selectedImage!,
-                                height: 250,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ],
-                        )
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.file(
+                                      _selectedImage!,
+                                      height: 250,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ],
+                              )
                             : SvgPicture.asset(Images.addImage),
                       ),
                     ),
@@ -171,17 +179,19 @@ class _NewTaskPageState extends State<NewTaskPage> {
                     ),
                     _buildTextField(
                       Strings.taskDesc,
-                      null,
+                      Strings.descHere,
                       controller: descController,
                       isMultiline: true,
                     ),
                     _buildPrioritySelector(),
                     _buildDateSelector(),
                     const SizedBox(height: 32),
-                    SignButton(
-                      text: 'Add Task',
-                      onTap: () => _addTask(context),
-                    ),
+                    SizedBox(
+                        width: double.infinity,
+                        child: SignButton(
+                          text: 'Add Task',
+                          onTap: () => _addTask(context),
+                        )),
                   ],
                 );
               },
@@ -191,6 +201,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
       ),
     );
   }
+
   Widget _buildTextField(String label, String? hint,
       {required TextEditingController controller, bool isMultiline = false}) {
     return Padding(
@@ -199,16 +210,22 @@ class _NewTaskPageState extends State<NewTaskPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: FontStyles.hintTextStyle),
-          TextInput(
+          TextField(
             controller: controller,
-            inputType:
-            isMultiline ? TextInputType.multiline : TextInputType.text,
-            hint: hint ?? "",
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: FontStyles.hintTextStyle,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            maxLines: isMultiline ? 5 : 1,
           ),
         ],
       ),
     );
   }
+
   Widget _buildPrioritySelector() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -218,6 +235,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
       ),
     );
   }
+
   Widget _buildDateSelector() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),

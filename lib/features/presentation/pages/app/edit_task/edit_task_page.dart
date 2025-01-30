@@ -224,7 +224,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
                                 fit: BoxFit.cover,
                               )
                             : Image.network(
-                                "https://todo.iraqsapp.com/images/${widget.task.image!}",
+                                "https://todo.iraqsapp.com/images/${widget.task.image}",
                                 height: 250,
                                 width: double.infinity,
                                 fit: BoxFit.cover,

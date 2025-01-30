@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
 import 'package:tasky/core/core.dart';
-import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
+import 'package:tasky/features/presentation/widgets/task_item.dart';
 import 'package:tasky/routes.dart';
 
 import 'home/home_cubit.dart';
 import 'home/home_state.dart';
-import '../../../widgets/infinite_scroll_pagination_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,15 +18,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ScrollController controller = ScrollController();
+  int page = 1;
+  bool hasMore = true;
+  int selectedChipIndex = 0;
+
   @override
   void initState() {
     super.initState();
     final cubit = context.read<HomeCubit>();
-    cubit.getTasks(1); // Replace with actual token
+    cubit.getTasks(page);
+    controller.addListener(_scrollListener);
   }
 
-  int selectedChipIndex = 0; // Get the selected chip index
-  List<TaskData> tasks = [];
+  void _scrollListener() {
+    if ((controller.position.maxScrollExtent == controller.offset) && hasMore) {
+      page++;
+      context.read<HomeCubit>().getTasks(page);
+      hasMore = context.read<HomeCubit>().filteredTasks.length < page * 20;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,15 +155,36 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                   Expanded(
-                    child: state is GetTasksSuccessState
-                        ? InfiniteScrollPaginationPage(
-                            tasks: state.filteredTasks,
-                            onRefresh: () =>
-                                context.read<HomeCubit>().getTasks(1),
-                          )
-                        : state is TasksLoadingState
-                            ? const Center(child: CircularProgressIndicator())
-                            : const Center(child: Text("No tasks available.")),
+                    child: state is TasksLoadingState
+                        ? const Center(child: CircularProgressIndicator())
+                        : RefreshIndicator(
+                            onRefresh: () async {
+                              page = 1;
+                              context.read<HomeCubit>().getTasks(page);
+                            },
+                            child: ListView.builder(
+                              controller: controller,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              itemCount: context
+                                      .read<HomeCubit>()
+                                      .filteredTasks
+                                      .length+1,
+                              itemBuilder: (context, index) {
+                                if (index < context.read<HomeCubit>().filteredTasks.length) {
+                                  return TaskItem(
+                                      task: context
+                                          .read<HomeCubit>()
+                                          .filteredTasks[index]);
+                                } else {
+                                  return state is PaginationLoadingState
+                                      ? Center(
+                                          child: CircularProgressIndicator())
+                                      : const SizedBox();
+                                }
+                              },
+                            ),
+                          ),
                   ),
                 ],
               ),

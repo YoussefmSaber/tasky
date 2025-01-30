@@ -8,13 +8,11 @@ import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
 
 class TaskItem extends StatelessWidget {
-  final TaskData taskData;
-  final Function(String) onDelete;
+  final TaskData task;
 
   const TaskItem({
     super.key,
-    required this.taskData,
-    required this.onDelete,
+    required this.task,
   });
 
   @override
@@ -24,11 +22,11 @@ class TaskItem extends StatelessWidget {
         color: Colors.transparent,
         child: ListTile(
           onTap: () => Navigator.of(context)
-              .pushNamed(RouteGenerator.details, arguments: taskData.id),
+              .pushNamed(RouteGenerator.details, arguments: task.id),
           contentPadding: EdgeInsets.zero,
           leading: ClipOval(
             child: Image.network(
-                "https://todo.iraqsapp.com/images/${taskData.image!}",
+                "https://todo.iraqsapp.com/images/${task.image}",
                 height: 55,
                 width: 55,
                 fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
@@ -41,19 +39,19 @@ class TaskItem extends StatelessWidget {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
               child: Text(
-                taskData.title!,
+                task.title!,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: FontStyles.listTitleStyle,
               ),
             ),
-            ProgressTag(state: taskData.status!)
+            ProgressTag(state: task.status!)
           ]),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                taskData.desc!,
+                task.desc!,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: FontStyles.descriptionStyle,
@@ -62,9 +60,9 @@ class TaskItem extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  PriorityTag(priority: taskData.priority!),
+                  PriorityTag(priority: task.priority!),
                   Text(
-                    formatIsoDate(taskData.createdAt!),
+                    formatIsoDate(task.createdAt!),
                     style: FontStyles.disableLabelStyle,
                   )
                 ],
@@ -85,7 +83,7 @@ class TaskItem extends StatelessWidget {
             onSelected: (value) {
               if (value == 'edit') {
                 Navigator.of(context)
-                    .pushNamed(RouteGenerator.editTask, arguments: taskData);
+                    .pushNamed(RouteGenerator.editTask, arguments: task);
               } else if (value == 'delete') {
                 showDialog(
                     context: context,
@@ -105,7 +103,7 @@ class TaskItem extends StatelessWidget {
                                   Navigator.pop(dialogContext);
                                   context
                                       .read<HomeCubit>()
-                                      .deletingTask(taskData.id!);
+                                      .deletingTask(task.id!);
                                 },
                                 child: Text(
                                   "Sure",

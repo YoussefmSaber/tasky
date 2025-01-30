@@ -13,8 +13,10 @@ class HomeCubit extends Cubit<HomeState> {
   final DeleteTaskUseCase deleteTaskUseCase;
   final LogoutUseCase logoutUseCase;
 
-  List<TaskData> _allTasks = [];
-  String _currentFilter = '';
+  List<TaskData> tasks = [];
+  List<TaskData> filteredTasks = [];
+  String currentFilter = '';
+  int newTasksCount = 0;
 
   HomeCubit(
       {required this.tasksUseCase,
@@ -26,40 +28,32 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       if (page == 1) {
         emit(TasksLoadingState());
-        _allTasks.clear();
+        tasks.clear();
       } else {
         emit(PaginationLoadingState());
       }
-
-      final tasks = await tasksUseCase.getListOfTasks(page);
-
-      if (page == 1) {
-        _allTasks = tasks;
+      final newTasks = await tasksUseCase.getListOfTasks(page);
+      if (newTasks.isEmpty) {
+        emit(GetTasksSuccessState(tasks: tasks, filteredTasks: filteredTasks, hasMore: false));
       } else {
-        _allTasks.addAll(tasks);
+          tasks.addAll(newTasks);
+          _applyFilter();
       }
-
-      _emitFilteredState();
     } catch (e) {
       emit(GetTasksErrorState(e.toString()));
     }
   }
 
   void filterTasks(int filterIndex) {
-    _currentFilter = _getStatusForFilter(filterIndex);
-    _emitFilteredState();
+    currentFilter = _getStatusForFilter(filterIndex);
+    _applyFilter();
   }
 
-  void _emitFilteredState() {
-    final filteredTasks = _currentFilter.isEmpty
-        ? _allTasks
-        : _allTasks.where((task) => task.status == _currentFilter).toList();
-
-    emit(GetTasksSuccessState(
-      allTasks: _allTasks,
-      filteredTasks: filteredTasks,
-      currentFilter: _currentFilter,
-    ));
+  void _applyFilter() {
+    filteredTasks = currentFilter.isEmpty
+        ? tasks
+        : tasks.where((task) => task.status == currentFilter).toList();
+    emit(GetTasksSuccessState(tasks: tasks, filteredTasks: filteredTasks, hasMore: true));
   }
 
   String _getStatusForFilter(int filterIndex) {
@@ -85,7 +79,7 @@ class HomeCubit extends Cubit<HomeState> {
           await deleteTaskUseCase.deleteTask(taskId);
 
       // Update the local task list
-      _allTasks.removeWhere((task) => task.id == taskId);
+      tasks.removeWhere((task) => task.id == taskId);
       getTasks(1);
       // Emit the deleted state first
       emit(TaskDeletedState(deletedTask));

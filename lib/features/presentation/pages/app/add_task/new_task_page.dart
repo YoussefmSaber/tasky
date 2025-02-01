@@ -209,7 +209,8 @@ class _NewTaskPageState extends State<NewTaskPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: FontStyles.hintTextStyle),
+          Text(label, style: FontStyles.descriptionStyle),
+          const SizedBox(height: 4),
           TextField(
             controller: controller,
             decoration: InputDecoration(
@@ -219,7 +220,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            maxLines: isMultiline ? 5 : 1,
+            maxLines: isMultiline ? 8 : 1,
           ),
         ],
       ),
@@ -229,9 +230,15 @@ class _NewTaskPageState extends State<NewTaskPage> {
   Widget _buildPrioritySelector() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: PriorityCard(
-        priority: "low",
-        onPrioritySelected: (value) => _selectedPriority = value,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Priority", style: FontStyles.descriptionStyle),const SizedBox(height: 4),
+          PriorityCard(
+            priority: "low",
+            onPrioritySelected: (value) => _selectedPriority = value,
+          ),
+        ],
       ),
     );
   }
@@ -239,8 +246,15 @@ class _NewTaskPageState extends State<NewTaskPage> {
   Widget _buildDateSelector() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: DatePicker(
-        onDateSelected: (date) => _selectedDate = date,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Due date", style: FontStyles.descriptionStyle),
+          const SizedBox(height: 4),
+          DatePicker(
+            onDateSelected: (date) => _selectedDate = date,
+          ),
+        ],
       ),
     );
   }

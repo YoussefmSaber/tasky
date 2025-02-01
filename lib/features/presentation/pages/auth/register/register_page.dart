@@ -22,7 +22,6 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: BlocConsumer<RegisterCubit, RegisterState>(
           listener: (BuildContext context, RegisterState state) {
@@ -39,25 +38,22 @@ class RegisterPage extends StatelessWidget {
           },
           builder: (context, state) {
             return SingleChildScrollView(
-              child: Stack(
+              child: Column(
                 children: [
                   Image.asset(Images.register),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 230.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildHeader(),
-                          _buildInputFields(),
-                          if (state is RegisterLoading)
-                            const Center(child: CircularProgressIndicator()),
-                          _buildSignUpButton(context),
-                          _buildFooter(context),
-                        ],
-                      ),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeader(),
+                        _buildInputFields(),
+                        if (state is RegisterLoading)
+                          const Center(child: CircularProgressIndicator()),
+                        _buildSignUpButton(context),
+                        _buildFooter(context),
+                      ],
                     ),
                   ),
                 ],

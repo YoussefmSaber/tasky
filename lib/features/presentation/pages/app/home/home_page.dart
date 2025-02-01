@@ -75,15 +75,6 @@ class _HomePageState extends State<HomePage> {
                     actions: [
                       TextButton(
                           onPressed: () {
-                            Navigator.pop(dialogContext);
-                          },
-                          child: Text(
-                            "I think not",
-                            style: TextStyle(
-                                fontSize: 12, color: AppColors.errorTextColor),
-                          )),
-                      TextButton(
-                          onPressed: () {
                             context.read<HomeCubit>().deleteTask(state.taskId);
                           },
                           child: Text(
@@ -91,7 +82,16 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                                 fontSize: 12,
                                 color: AppColors.inprogressTextColor),
-                          ))
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                          },
+                          child: Text(
+                            "I think not",
+                            style: TextStyle(
+                                fontSize: 12, color: AppColors.errorTextColor),
+                          )),
                     ]);
               });
         }

@@ -1,14 +1,18 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:tasky/core/constants/endpoints.dart';
 import 'package:tasky/features/data/data_sources/shared_preference.dart';
+
+/// A client for making HTTP requests using the Dio package.
+/// Handles authentication and token refresh logic.
 class DioClient {
   late Dio dio;
   final SharedPreferenceService preferenceService;
   final Function() onLogout;
   bool _isRefreshing = false;
-  final List<Future<void>> _pendingRequests = [];
+  final List<Completer<Response>> _pendingRequests = [];
 
+  /// Constructs a DioClient with the given [preferenceService] and [onLogout] callback.
   DioClient(this.preferenceService, this.onLogout) {
     dio = Dio(
       BaseOptions(
@@ -27,57 +31,84 @@ class DioClient {
     ]);
   }
 
+  /// Creates an interceptor for handling authentication.
   Interceptor _createAuthInterceptor() {
     return InterceptorsWrapper(
       onRequest: (options, handler) async {
-        // Don't add auth header for refresh token requests
-        if (options.path == ApiEndpoints.refreshToken) {
-          return handler.next(options);
-        }
-
-        final token = preferenceService.getAccessToken();
-        if (token != null) {
-          if (_isTokenExpired(token) && !_isRefreshing) {
-            try {
-              await _refreshToken();
-              // Get the new token after refresh
-              final newToken = preferenceService.getAccessToken();
-              options.headers['Authorization'] = 'Bearer $newToken';
-            } catch (e) {
-              // If refresh fails, trigger logout
-              await preferenceService.clearTokens();
-              onLogout();
-              return handler.reject(
-                DioException(
-                  requestOptions: options,
-                  error: 'Token refresh failed',
-                ),
-              );
-            }
-          } else {
+        try {
+          final token = preferenceService.getAccessToken();
+          if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
+          return handler.next(options);
+        } catch (e) {
+          return handler.reject(
+            DioException(
+              requestOptions: options,
+              error: e,
+            ),
+          );
         }
-        return handler.next(options);
       },
+
+      /// Handles errors, specifically 401 Unauthorized errors, by attempting to refresh the token.
       onError: (error, handler) async {
-        if (error.response?.statusCode == 401 && !_isRefreshing) {
-          _isRefreshing = true;
+        if (error.response?.statusCode == 401) {
+          final requestOptions = error.requestOptions;
 
           try {
-            final newToken = await _refreshToken();
-            _isRefreshing = false;
+            if (!_isRefreshing) {
+              _isRefreshing = true;
+              final newAccessToken = await _refreshToken();
+              _isRefreshing = false;
 
-            // Retry the original request with new token
-            final originalRequest = error.requestOptions;
-            originalRequest.headers['Authorization'] = 'Bearer $newToken';
-            final retryResponse = await dio.fetch(originalRequest);
-            return handler.resolve(retryResponse);
+              if (newAccessToken != null) {
+                // Update the request header with new token
+                requestOptions.headers['Authorization'] =
+                    'Bearer $newAccessToken';
+
+                // Retry all pending requests with their original options
+                for (final completer in _pendingRequests) {
+                  try {
+                    final response = await dio.fetch(requestOptions);
+                    completer.complete(response);
+                  } catch (e) {
+                    completer.completeError(e);
+                  }
+                }
+                _pendingRequests.clear();
+
+                // Return the response for the current request
+                return handler.resolve(await dio.fetch(requestOptions));
+              } else {
+                // If refresh token failed, reject all pending requests
+                for (final completer in _pendingRequests) {
+                  completer.completeError(error);
+                }
+                _pendingRequests.clear();
+                return handler.reject(error);
+              }
+            } else {
+              // Add to pending requests if a refresh is already in progress
+              final responseCompleter = Completer<Response>();
+              _pendingRequests.add(responseCompleter);
+              return handler.resolve(await responseCompleter.future);
+            }
           } catch (e) {
             _isRefreshing = false;
-            await preferenceService.clearTokens();
+            // Complete all pending requests with error
+            for (final completer in _pendingRequests) {
+              completer.completeError(e);
+            }
+            _pendingRequests.clear();
+            preferenceService.clearTokens();
             onLogout();
-            return handler.reject(error);
+            return handler.reject(
+              DioException(
+                requestOptions: requestOptions,
+                error: e,
+              ),
+            );
           }
         }
         return handler.next(error);
@@ -85,46 +116,31 @@ class DioClient {
     );
   }
 
-  Future<String> _refreshToken() async {
-    final refreshToken = preferenceService.getRefreshToken();
-    if (refreshToken == null) {
-      throw Exception('No refresh token available');
-    }
-
+  /// Refreshes the access token using the refresh token.
+  /// Returns the new access token if successful, otherwise returns null.
+  Future<String?> _refreshToken() async {
     try {
-      // Don't include the expired token in the refresh request
+      final refreshToken = preferenceService.getRefreshToken();
+      if (refreshToken == null) {
+        throw Exception('No refresh token available');
+      }
+
       final response = await dio.get(
         ApiEndpoints.refreshToken,
         queryParameters: {'token': refreshToken},
       );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final newToken = response.data['access_token'];
-        await preferenceService.saveAccessToken(newToken);
-        return newToken;
-      } else {
-        throw Exception('Failed to refresh token');
+      if (response.data == null || response.data['access_token'] == null) {
+        throw Exception('Invalid refresh token response');
       }
-    } catch (e) {
-      throw Exception('Failed to refresh token: $e');
+
+      final newAccessToken = response.data['access_token'] as String;
+      await preferenceService.saveAccessToken(newAccessToken);
+      return newAccessToken;
+    } catch (exception) {
+      await preferenceService.clearTokens();
+      onLogout();
+      return null;
     }
-  }
-
-  bool _isTokenExpired(String token) {
-    try {
-      final expirationDate = JwtDecoder.getExpirationDate(token);
-      // Add some buffer time (e.g., 30 seconds) to prevent edge cases
-      return DateTime.now().isAfter(expirationDate.subtract(Duration(seconds: 30)));
-    } catch (e) {
-      // If we can't decode the token, consider it expired
-      return true;
-    }
-  }
-
-  bool get hasRetryingRequests => _pendingRequests.isNotEmpty;
-
-  Future<void> waitForRetryingRequests() async {
-    if (_pendingRequests.isEmpty) return;
-    await Future.wait(_pendingRequests);
   }
 }

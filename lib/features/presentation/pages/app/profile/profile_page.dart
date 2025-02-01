@@ -53,16 +53,16 @@ class _ProfilePageState extends State<ProfilePage> {
                         title: "Name".toUpperCase(),
                         data: profile.displayName!),
                     SizedBox(
-                      height: 16,
+                      height: 8,
                     ),
                     PhoneCard(phoneNumber: profile.phoneNumber!),
                     SizedBox(
-                      height: 16,
+                      height: 8,
                     ),
                     ProfileItemCard(
                         title: "Level".toUpperCase(), data: profile.level!),
                     SizedBox(
-                      height: 16,
+                      height: 8,
                     ),
                     ProfileItemCard(
                         title: "Years of experience".toUpperCase(),
@@ -70,13 +70,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             ? "1 Year"
                             : "${profile.experienceYears} Years"),
                     SizedBox(
-                      height: 16,
+                      height: 8,
                     ),
                     ProfileItemCard(
                         title: "Location".toUpperCase(),
                         data: profile.address!),
                     SizedBox(
-                      height: 16,
+                      height: 8,
                     ),
                   ]);
             } else if (state is ErrorFetchingProfileState) {

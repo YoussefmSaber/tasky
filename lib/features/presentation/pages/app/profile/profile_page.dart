@@ -7,6 +7,7 @@ import 'package:tasky/features/domain/use_cases/user/profile_use_case.dart';
 import 'package:tasky/features/presentation/pages/app/profile/profile/profile_cubit.dart';
 import 'package:tasky/features/presentation/pages/app/profile/profile/profile_states.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
+import 'package:tasky/features/presentation/widgets/loading/profile_item_loading.dart';
 import 'package:tasky/routes.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -43,7 +44,11 @@ class _ProfilePageState extends State<ProfilePage> {
           listener: (_, state) {},
           builder: (_, state) {
             if (state is ProfileLoadingState) {
-              return CircularProgressIndicator();
+              return ListView.separated(
+                itemBuilder: (context, index) => ProfileItemLoading(),
+                separatorBuilder: (context, index) => SizedBox(height: 8),
+                itemCount: 5,
+              );
             } else if (state is GetProfileSuccessState) {
               final profile = state.userData;
               return Column(

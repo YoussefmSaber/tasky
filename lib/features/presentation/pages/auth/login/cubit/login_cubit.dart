@@ -31,7 +31,7 @@ class LoginCubit extends Cubit<LoginState> {
         await getIt<SharedPreferenceService>()
             .saveAccessToken(userTokens.accessToken!);
         await getIt<SharedPreferenceService>()
-            .saveRefreshToken(userTokens.accessToken!);
+            .saveRefreshToken(userTokens.refreshToken!);
         emit(LoginSuccess(userTokens));
       } else {
         emit(LoginError("Login failed"));

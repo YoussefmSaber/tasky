@@ -18,6 +18,7 @@ class RegisterPage extends StatelessWidget {
   final yearsOfExpController = TextEditingController();
   final addressController = TextEditingController();
   final phoneController = TextEditingController();
+  final levelController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +99,13 @@ class RegisterPage extends StatelessWidget {
             inputType: TextInputType.number,
           ),
         ),
-        const Padding(
+        Padding(
           padding: Constants.inputPadding,
-          child: Dropdown(),
+          child: Dropdown(
+            onLevelSelected: (value) {
+              levelController.text = value;
+            },
+          ),
         ),
         Padding(
           padding: Constants.inputPadding,
@@ -157,6 +162,7 @@ class RegisterPage extends StatelessWidget {
                     displayName: nameController.text,
                     experienceYears: int.parse(yearsOfExpController.text),
                     address: addressController.text,
+                    level: levelController.text,
                   ));
             }
           },

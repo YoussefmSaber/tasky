@@ -1,3 +1,4 @@
+import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -21,22 +22,31 @@ class TaskItem extends StatelessWidget {
         elevation: 0,
         color: Colors.transparent,
         child: ListTile(
-          onTap: () => Navigator.of(context)
-              .pushNamed(RouteGenerator.details, arguments: task.id),
+          onTap: () =>
+              Navigator.of(context)
+                  .pushNamed(RouteGenerator.details, arguments: task.id),
           contentPadding: EdgeInsets.zero,
           leading: ClipOval(
             child: Image.network(
                 "https://todo.iraqsapp.com/images/${task.image}",
                 height: 55,
                 width: 55,
-                fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
-              return CircleAvatar(
-                backgroundColor: AppColors.secondaryTextColor,
-              );
-            }),
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  return CardLoading(height: 55,
+                      width: 55,
+                      borderRadius: BorderRadius.circular(50));
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 55,
+                    height: 55,
+                    color: Colors.grey,
+                  );
+                }),
           ),
           title:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
               child: Text(
                 task.title!,
@@ -70,7 +80,8 @@ class TaskItem extends StatelessWidget {
             ],
           ),
           trailing: PopupMenuButton(
-            itemBuilder: (BuildContext context) => [
+            itemBuilder: (BuildContext context) =>
+            [
               PopupMenuItem(
                 value: 'edit',
                 child: Text("Edit", style: FontStyles.menuTextStyle),

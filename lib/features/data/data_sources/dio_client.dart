@@ -121,6 +121,7 @@ class DioClient {
   Future<String?> _refreshToken() async {
     try {
       final refreshToken = preferenceService.getRefreshToken();
+      print("refreshToken: $refreshToken");
       if (refreshToken == null) {
         throw Exception('No refresh token available');
       }

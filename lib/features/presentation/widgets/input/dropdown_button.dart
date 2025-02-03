@@ -4,7 +4,8 @@ import 'package:tasky/core/core.dart';
 /// A stateful widget that displays a dropdown button with experience levels.
 class Dropdown extends StatefulWidget {
   /// Creates a [Dropdown] widget.
-  const Dropdown({super.key});
+  final Function(String) onLevelSelected;
+  const Dropdown({super.key, required this.onLevelSelected});
 
   @override
   State<Dropdown> createState() => _DropdownButtonState();
@@ -31,7 +32,9 @@ class _DropdownButtonState extends State<Dropdown> {
       ),
       items: items,
       onChanged: (value) {
-
+        setState(() {
+          widget.onLevelSelected(value.toString());
+        });
       },
     );
   }

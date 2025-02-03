@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
 import 'package:tasky/core/core.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
+import 'package:tasky/features/presentation/widgets/loading/task_item_loading.dart';
 import 'package:tasky/features/presentation/widgets/task_item.dart';
 import 'package:tasky/routes.dart';
 
@@ -156,7 +157,11 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Expanded(
                     child: state is TasksLoadingState
-                        ? const Center(child: CircularProgressIndicator())
+                        ? ListView.separated(
+                            itemBuilder: (context, index) => TaskItemLoading(),
+                            separatorBuilder: (context, index) =>
+                                SizedBox(height: 8),
+                            itemCount: 10)
                         : RefreshIndicator(
                             onRefresh: () async {
                               page = 1;
@@ -169,17 +174,21 @@ class _HomePageState extends State<HomePage> {
                               itemCount: context
                                       .read<HomeCubit>()
                                       .filteredTasks
-                                      .length+1,
+                                      .length +
+                                  1,
                               itemBuilder: (context, index) {
-                                if (index < context.read<HomeCubit>().filteredTasks.length) {
+                                if (index <
+                                    context
+                                        .read<HomeCubit>()
+                                        .filteredTasks
+                                        .length) {
                                   return TaskItem(
                                       task: context
                                           .read<HomeCubit>()
                                           .filteredTasks[index]);
                                 } else {
                                   return state is PaginationLoadingState
-                                      ? Center(
-                                          child: CircularProgressIndicator())
+                                      ? TaskItemLoading()
                                       : const SizedBox();
                                 }
                               },

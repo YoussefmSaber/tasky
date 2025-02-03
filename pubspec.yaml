@@ -40,7 +40,7 @@ dependencies:
   flutter_svg: ^2.0.17            # SVG support in Flutter
   flutter_svg_icons: ^0.0.1+4     # Predefined SVG icons
   google_fonts: ^6.2.1            # Google Fonts package
-  fade_shimmer: ^2.3.0            # Loading shimmer effects
+  card_loading: ^0.3.2            # Loading shimmer effects
   flutter_staggered_animations: ^1.1.1  # Staggered animations
   image_picker: ^1.1.2  # Image picker for Android and iOS
   file_picker: ^8.1.7 # File picker for Windows

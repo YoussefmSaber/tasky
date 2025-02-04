@@ -1,5 +1,3 @@
-// ignore_for_file: unused_import
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasky/core/core.dart';
@@ -10,6 +8,7 @@ import 'package:tasky/routes.dart';
 
 import '../states/profile_states.dart';
 
+/// A `StatefulWidget` that represents the profile page.
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -17,11 +16,12 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
+/// The state for the `ProfilePage` widget.
 class _ProfilePageState extends State<ProfilePage> {
-  @override
   @override
   void initState() {
     super.initState();
+    // Fetch the profile data when the widget is initialized.
     context.read<ProfileCubit>().getProfile();
   }
 
@@ -44,6 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
           listener: (_, state) {},
           builder: (_, state) {
             if (state is ProfileLoadingState) {
+              // Display a loading indicator while the profile data is being fetched.
               return ListView.separated(
                 itemBuilder: (context, index) => ProfileItemLoading(),
                 separatorBuilder: (context, index) => SizedBox(height: 8),
@@ -51,6 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             } else if (state is GetProfileSuccessState) {
               final profile = state.userData;
+              // Display the profile data when it is successfully fetched.
               return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -85,8 +87,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ]);
             } else if (state is ErrorFetchingProfileState) {
+              // Display an error message if there was an error fetching the profile data.
               return Center(child: Text("Error: $state"));
             } else {
+              // Display a message if no profile data is available.
               return const Center(child: Text("No Profile Data Available"));
             }
           },

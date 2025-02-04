@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tasky/core/core.dart';
 
+/// A widget that displays a tag with a background color and text color
+/// based on the provided state.
 class ProgressTag extends StatelessWidget {
+  /// The state of the progress tag.
   final String state;
 
+  /// Creates a [ProgressTag] widget.
+  ///
+  /// The [state] parameter must not be null.
   const ProgressTag({super.key, required this.state});
 
   @override
@@ -27,6 +33,9 @@ class ProgressTag extends StatelessWidget {
     );
   }
 
+  /// Returns the text color based on the provided state.
+  ///
+  /// If the state is not recognized, it defaults to the waiting text color.
   Color _textColorSwitcher(String state) {
     const colorMap = {
       'waiting': AppColors.waitingTextColor,
@@ -37,6 +46,9 @@ class ProgressTag extends StatelessWidget {
     return colorMap[state.toLowerCase()] ?? AppColors.waitingTextColor;
   }
 
+  /// Returns the background color based on the provided state.
+  ///
+  /// If the state is not recognized, it defaults to the waiting background color.
   Color _backgroundColorSwitcher(String state) {
     // Use a map for faster lookup
     const colorMap = {

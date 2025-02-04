@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:tasky/routes.dart';
 
+/// A page that displays a QR code scanner.
 class QRScannerPage extends StatelessWidget {
   const QRScannerPage({super.key});
 
@@ -17,7 +18,7 @@ class QRScannerPage extends StatelessWidget {
           return QRScannerOverlay(
             borderColor: Colors.red,
             borderWidth: 3,
-            overlayColor: Colors.black.withOpacity(0.5),
+            overlayColor: Colors.black.withValues(alpha: 0.5),
           );
         },
         onDetect: (BarcodeCapture barcodeCapture) {
@@ -39,11 +40,18 @@ class QRScannerPage extends StatelessWidget {
   }
 }
 
+/// A widget that provides an overlay for the QR code scanner.
 class QRScannerOverlay extends StatelessWidget {
   final Color borderColor;
   final double borderWidth;
   final Color overlayColor;
 
+  /// Creates a QRScannerOverlay.
+  ///
+  /// The [borderColor] parameter specifies the color of the border around the
+  /// scanner cutout. The [borderWidth] parameter specifies the width of the
+  /// border. The [overlayColor] parameter specifies the color of the overlay
+  /// background.
   const QRScannerOverlay({
     super.key,
     required this.borderColor,

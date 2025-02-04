@@ -16,8 +16,10 @@ import '../../domain/entities/task/task_data.dart';
 import '../cubit/edit_task_cubit.dart';
 import '../states/edit_task_states.dart';
 
+/// Callback type for handling errors.
 typedef ErrorCallback = void Function(String message);
 
+/// A page for editing a task.
 class EditTaskPage extends StatefulWidget {
   final TaskData task;
 
@@ -27,6 +29,7 @@ class EditTaskPage extends StatefulWidget {
   State<EditTaskPage> createState() => _EditTaskPageState(); // Fixed class name
 }
 
+/// State class for `EditTaskPage`.
 class _EditTaskPageState extends State<EditTaskPage> {
   late String editedPriority;
   late String editedState;
@@ -50,6 +53,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     descController.addListener(_onFieldChanged);
   }
 
+  /// Listener for detecting changes in the form fields.
   void _onFieldChanged() {
     if (!_hasUnsavedChanges) {
       setState(() => _hasUnsavedChanges = true);
@@ -65,6 +69,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     super.dispose();
   }
 
+  /// Handles the back navigation with a confirmation dialog for unsaved changes.
   void _onWillPop() async {
     await showDialog<bool>(
       context: context,
@@ -103,6 +108,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     );
   }
 
+  /// Picks an image from the desktop file picker.
   Future<void> _pickDesktopImage(BuildContext context) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -121,6 +127,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     }
   }
 
+  /// Picks an image from the specified source (camera or gallery).
   Future<void> _pickImage(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(source: source);
@@ -136,6 +143,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     }
   }
 
+  /// Shows a dialog for selecting an image source.
   void _showImagePickerDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -179,6 +187,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     );
   }
 
+  /// Validates the form inputs.
   bool _validateInputs() {
     if (_formKey.currentState!.validate()) {
       return true;

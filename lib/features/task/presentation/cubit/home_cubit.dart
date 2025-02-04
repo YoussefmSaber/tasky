@@ -7,8 +7,9 @@ import '../../domain/usecases/post/delete_task_use_case.dart';
 import '../../domain/usecases/post/logout_use_case.dart';
 
 /// Cubit for managing the state of the Home page.
-// Update the HomeCubit to use background processing
-// Update the HomeCubit with stream-based filtering
+///
+/// This Cubit handles the fetching, filtering, and deleting of tasks,
+/// as well as logging out the user.
 class HomeCubit extends Cubit<HomeState> {
   final GetTasksUseCase tasksUseCase;
   final DeleteTaskUseCase deleteTaskUseCase;
@@ -19,12 +20,20 @@ class HomeCubit extends Cubit<HomeState> {
   String currentFilter = '';
   int newTasksCount = 0;
 
+  /// Constructor for HomeCubit.
+  ///
+  /// \param tasksUseCase The use case for fetching tasks.
+  /// \param deleteTaskUseCase The use case for deleting tasks.
+  /// \param logoutUseCase The use case for logging out.
   HomeCubit(
       {required this.tasksUseCase,
       required this.logoutUseCase,
       required this.deleteTaskUseCase})
       : super(HomeInitialState());
 
+  /// Fetches tasks from the server.
+  ///
+  /// \param page The page number to fetch.
   Future<void> getTasks(int page) async {
     try {
       if (page == 1) {
@@ -45,11 +54,15 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  /// Filters tasks based on the given filter index.
+  ///
+  /// \param filterIndex The index of the filter to apply.
   void filterTasks(int filterIndex) {
     currentFilter = _getStatusForFilter(filterIndex);
     _applyFilter();
   }
 
+  /// Applies the current filter to the tasks.
   void _applyFilter() {
     filteredTasks = currentFilter.isEmpty
         ? tasks
@@ -57,6 +70,10 @@ class HomeCubit extends Cubit<HomeState> {
     emit(GetTasksSuccessState(tasks: tasks, filteredTasks: filteredTasks, hasMore: true));
   }
 
+  /// Returns the status string for the given filter index.
+  ///
+  /// \param filterIndex The index of the filter.
+  /// \return The status string corresponding to the filter index.
   String _getStatusForFilter(int filterIndex) {
     switch (filterIndex) {
       case 0:
@@ -70,10 +87,16 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  /// Initiates the deletion of a task.
+  ///
+  /// \param taskId The ID of the task to delete.
   Future<void> deleteTask(String taskId) async {
     emit(TaskDeletingState(taskId));
   }
 
+  /// Deletes a task and updates the state.
+  ///
+  /// \param taskId The ID of the task to delete.
   Future<void> deletingTask(String taskId) async {
     try {
       final deletedTask =
@@ -90,8 +113,6 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   /// Logs out the user and updates the state accordingly.
-  ///
-  /// \param accessToken The access token of the user.
   Future<void> logout() async {
     try {
       emit(LogoutLoadingState());

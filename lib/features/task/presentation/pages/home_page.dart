@@ -12,6 +12,7 @@ import 'package:tasky/routes.dart';
 import '../cubit/home_cubit.dart';
 import '../states/home_state.dart';
 
+/// The `HomePage` widget is a stateful widget that represents the home page of the application.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -19,6 +20,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+/// The `_HomePageState` class manages the state of the `HomePage` widget.
 class _HomePageState extends State<HomePage> {
   final ScrollController controller = ScrollController();
   int page = 1;
@@ -33,6 +35,7 @@ class _HomePageState extends State<HomePage> {
     controller.addListener(_scrollListener);
   }
 
+  /// The `_scrollListener` method listens for scroll events and loads more tasks when the user scrolls to the bottom.
   void _scrollListener() {
     if ((controller.position.maxScrollExtent == controller.offset) && hasMore) {
       page++;
@@ -133,48 +136,48 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: state is TasksLoadingState
                         ? ListView.separated(
-                            itemBuilder: (context, index) => TaskItemLoading(),
-                            separatorBuilder: (context, index) =>
-                                SizedBox(height: 8),
-                            itemCount: 10)
+                        itemBuilder: (context, index) => TaskItemLoading(),
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: 8),
+                        itemCount: 10)
                         : RefreshIndicator(
-                            onRefresh: () async {
-                              page = 1;
-                              context.read<HomeCubit>().getTasks(page);
-                            },
-                            child: context
+                      onRefresh: () async {
+                        page = 1;
+                        context.read<HomeCubit>().getTasks(page);
+                      },
+                      child: context
+                          .read<HomeCubit>()
+                          .filteredTasks
+                          .isEmpty
+                          ? Center(
+                        child: Text("You Have No Tasks"),
+                      )
+                          : ListView.builder(
+                        controller: controller,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16),
+                        itemCount: context
+                            .read<HomeCubit>()
+                            .filteredTasks
+                            .length + 1,
+                        itemBuilder: (context, index) {
+                          if (index <
+                              context
+                                  .read<HomeCubit>()
+                                  .filteredTasks
+                                  .length) {
+                            return TaskItem(
+                                task: context
                                     .read<HomeCubit>()
-                                    .filteredTasks
-                                    .isEmpty
-                                ? Center(
-                                    child: Text("You Have No Tasks"),
-                                  )
-                                : ListView.builder(
-                                    controller: controller,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    itemCount: context
-                                            .read<HomeCubit>()
-                                            .filteredTasks
-                                            .length + 1,
-                                    itemBuilder: (context, index) {
-                                      if (index <
-                                          context
-                                              .read<HomeCubit>()
-                                              .filteredTasks
-                                              .length) {
-                                        return TaskItem(
-                                            task: context
-                                                .read<HomeCubit>()
-                                                .filteredTasks[index]);
-                                      } else {
-                                        return state is PaginationLoadingState
-                                            ? TaskItemLoading()
-                                            : const SizedBox();
-                                      }
-                                    },
-                                  ),
-                          ),
+                                    .filteredTasks[index]);
+                          } else {
+                            return state is PaginationLoadingState
+                                ? TaskItemLoading()
+                                : const SizedBox();
+                          }
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -216,5 +219,4 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-// Function to filter tasks based on selected chip
 }

@@ -16,6 +16,9 @@ import 'features/auth/presentation/cubit/register_cubit.dart';
 import 'features/task/presentation/cubit/new_task_cubit.dart';
 
 /// The main entry point of the application.
+///
+/// This function initializes the Flutter binding, sets up shared preferences,
+/// initializes the dependency injection, and starts the application.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -29,8 +32,9 @@ void main() async {
   runApp(
       MyApp(token: accessToken, isOnboardingCompleted: isOnboardingCompleted));
 }
-
 /// The root widget of the application.
+///
+/// This widget sets up the [MultiBlocProvider] and [MaterialApp] for the application.
 class MyApp extends StatelessWidget {
   final String? token;
   final bool isOnboardingCompleted;
@@ -38,6 +42,7 @@ class MyApp extends StatelessWidget {
   /// Constructs a [MyApp] widget.
   ///
   /// The [token] parameter is optional and can be null.
+  /// The [isOnboardingCompleted] parameter indicates whether the onboarding process is completed.
   const MyApp({super.key, this.token, required this.isOnboardingCompleted});
 
   /// Builds the widget tree for the application.

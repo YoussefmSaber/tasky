@@ -10,9 +10,12 @@ import 'package:tasky/routes.dart';
 
 import '../../task/domain/entities/task/task_data.dart';
 
+/// A widget that represents a task item in a list.
 class TaskItem extends StatefulWidget {
+  /// The task data to be displayed.
   final TaskData task;
 
+  /// Creates a [TaskItem] widget.
   const TaskItem({
     super.key,
     required this.task,
@@ -22,6 +25,7 @@ class TaskItem extends StatefulWidget {
   State<TaskItem> createState() => _TaskItemState();
 }
 
+/// The state for the [TaskItem] widget.
 class _TaskItemState extends State<TaskItem> {
   @override
   Widget build(BuildContext context) {
@@ -158,6 +162,13 @@ class _TaskItemState extends State<TaskItem> {
         ));
   }
 
+  /// Formats an ISO 8601 date string to a human-readable format.
+  ///
+  /// The format used is "d MMMM yyyy", e.g., "21 January 2025".
+  ///
+  /// [isoDate] The ISO 8601 date string to format.
+  ///
+  /// Returns the formatted date string.
   String formatIsoDate(String isoDate) {
     // Parse the ISO 8601 string to a DateTime object
     DateTime dateTime = DateTime.parse(isoDate);

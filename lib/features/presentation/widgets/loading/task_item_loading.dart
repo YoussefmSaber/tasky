@@ -1,7 +1,9 @@
 import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
 
+/// A widget that displays a loading placeholder for a task item.
 class TaskItemLoading extends StatelessWidget {
+  /// Creates a [TaskItemLoading] widget.
   const TaskItemLoading({super.key});
 
   @override

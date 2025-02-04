@@ -10,6 +10,7 @@ import 'package:tasky/routes.dart';
 
 import '../cubit/details_cubit.dart';
 
+/// A page that displays the details of a task.
 class DetailsPage extends StatefulWidget {
   final String taskId;
 
@@ -19,6 +20,7 @@ class DetailsPage extends StatefulWidget {
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
+/// The state for the [DetailsPage] widget.
 class _DetailsPageState extends State<DetailsPage> {
   @override
   void initState() {
@@ -71,7 +73,7 @@ class _DetailsPageState extends State<DetailsPage> {
                   onPressed: () => Navigator.pop(context, true),
                   icon: AppIcons.backArrow),
               title:
-                  Text(Strings.taskDetails, style: FontStyles.textTitleStyle),
+              Text(Strings.taskDetails, style: FontStyles.textTitleStyle),
               actions: [
                 PopupMenuButton(
                   itemBuilder: (context) => [
@@ -169,6 +171,7 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  /// Shows a dialog to confirm the deletion of a task.
   void showDeleteDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -204,6 +207,7 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  /// Formats an ISO date string to a more readable format.
   String formatIsoDate(String isoDate) {
     DateTime dateTime = DateTime.parse(isoDate);
     return DateFormat("d MMMM yyyy").format(dateTime);

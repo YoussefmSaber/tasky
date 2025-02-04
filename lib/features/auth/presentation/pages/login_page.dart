@@ -8,6 +8,7 @@ import 'package:tasky/routes.dart';
 
 import '../cubit/login_cubit.dart';
 
+/// A stateful widget that represents the login page.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -15,6 +16,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+/// The state for the `LoginPage` widget.
 class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
@@ -23,10 +25,13 @@ class _LoginPageState extends State<LoginPage> {
     context.read<LoginCubit>().initial();
   }
 
+  // Controller for the phone number input field.
   final TextEditingController phoneController = TextEditingController();
 
+  // Controller for the password input field.
   final TextEditingController passwordController = TextEditingController();
 
+  // Key for the login form.
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -66,6 +71,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  /// Builds the login screen UI.
+  ///
+  /// [context] is the build context.
+  /// [state] is the current state of the login cubit.
   Widget _buildLoginScreen(BuildContext context, LoginState state) {
     String? passwordError;
 
@@ -134,6 +143,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  /// Builds a padding widget.
+  ///
+  /// [child] is the widget to be wrapped with padding.
   Widget _buildPadding({required Widget child}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -141,6 +153,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  /// Handles the login button press event.
+  ///
+  /// [context] is the build context.
   void _onLoginButtonPressed(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       showDialog(
@@ -171,6 +186,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  /// Builds the footer widget.
+  ///
+  /// [context] is the build context.
   Widget _buildFooter(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

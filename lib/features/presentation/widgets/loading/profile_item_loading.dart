@@ -1,7 +1,9 @@
 import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
 
+/// A widget that displays a loading indicator for a profile item.
 class ProfileItemLoading extends StatelessWidget {
+  /// Creates a [ProfileItemLoading] widget.
   const ProfileItemLoading({super.key});
 
   @override

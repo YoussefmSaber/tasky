@@ -9,6 +9,7 @@ import '../../domain/entities/user_register.dart';
 import '../cubit/register_cubit.dart';
 import '../states/register_state.dart';
 
+/// A stateful widget that represents the registration page.
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -16,21 +17,16 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
+/// The state for the [RegisterPage] widget.
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
 
   final nameController = TextEditingController();
-
   final passwordController = TextEditingController();
-
   final confirmPasswordController = TextEditingController();
-
   final yearsOfExpController = TextEditingController();
-
   final addressController = TextEditingController();
-
   final phoneController = TextEditingController();
-
   final levelController = TextEditingController();
 
   @override
@@ -77,11 +73,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         _buildHeader(),
                         _buildInputFields(),
-                        state is RegisterError
-                            ? Center(
-                                child: Text(state.message,
-                                    style: FontStyles.errorMenuTextStyle))
-                            : SizedBox.shrink(),
+                        if (state is RegisterError)
+                          Center(
+                              child: Text(state.message,
+                                  style: FontStyles.errorMenuTextStyle))
+                        else
+                          SizedBox.shrink(),
                         _buildSignUpButton(context),
                         _buildFooter(context),
                       ],
@@ -96,6 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  /// Builds the header widget for the registration page.
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -106,6 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  /// Builds the input fields for the registration form.
   Widget _buildInputFields() {
     return Column(
       children: [
@@ -116,8 +115,8 @@ class _RegisterPageState extends State<RegisterPage> {
             validator: (value) =>
                 value == null || value.isEmpty ? 'Name is required' : null,
             decoration: InputDecoration(
-              hintText: Strings.registerName, // Added
-              hintStyle: FontStyles.hintTextStyle, // labelText
+              hintText: Strings.registerName,
+              hintStyle: FontStyles.hintTextStyle,
               border: WidgetStyles.borderStyle,
               focusedBorder: WidgetStyles.borderStyle,
             ),
@@ -144,8 +143,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 ? 'Years of experience is required'
                 : null,
             decoration: InputDecoration(
-              hintText: Strings.registerYearsOfExp, // Added
-              hintStyle: FontStyles.hintTextStyle, // labelText
+              hintText: Strings.registerYearsOfExp,
+              hintStyle: FontStyles.hintTextStyle,
               border: WidgetStyles.borderStyle,
               focusedBorder: WidgetStyles.borderStyle,
             ),
@@ -166,8 +165,8 @@ class _RegisterPageState extends State<RegisterPage> {
               validator: (value) =>
                   value == null || value.isEmpty ? 'Address is required' : null,
               decoration: InputDecoration(
-                hintText: Strings.registerAddress, // Added
-                hintStyle: FontStyles.hintTextStyle, // labelText
+                hintText: Strings.registerAddress,
+                hintStyle: FontStyles.hintTextStyle,
                 border: WidgetStyles.borderStyle,
                 focusedBorder: WidgetStyles.borderStyle,
               )),
@@ -205,6 +204,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  /// Builds the sign-up button for the registration form.
   Widget _buildSignUpButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -221,7 +221,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       title: Text("Registering"),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
-                        // Wrap content vertically
                         children: [
                           Text("Wait while we register your new account"),
                           SizedBox(height: 8),
@@ -234,7 +233,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       surfaceTintColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
-                            Radius.circular(8)), // Adjust corner radius
+                            Radius.circular(8)),
                       ),
                     );
                   });
@@ -260,6 +259,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  /// Builds the footer widget for the registration page.
   Widget _buildFooter(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

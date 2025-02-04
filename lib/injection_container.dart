@@ -24,7 +24,6 @@ import 'features/task/presentation/cubit/edit_task_cubit.dart';
 import 'features/task/presentation/cubit/home_cubit.dart';
 import 'features/auth/presentation/cubit/register_cubit.dart';
 import 'features/task/presentation/cubit/new_task_cubit.dart';
-
 /// Singleton instance of GetIt for dependency injection
 final getIt = GetIt.instance;
 
@@ -55,22 +54,22 @@ void setup(SharedPreferenceService sharedPrefService) {
 
   // Use cases
   // User
-  getIt.registerLazySingleton(() => LoginUseCase(getIt()));
-  getIt.registerLazySingleton(() => RegisterUseCase(getIt()));
+  getIt.registerLazySingleton<LoginUseCase>(() => LoginUseCase(getIt()));
+  getIt.registerLazySingleton<RegisterUseCase>(() => RegisterUseCase(getIt()));
 
-  getIt.registerLazySingleton(() => LogoutUseCase(getIt()));
-  getIt.registerLazySingleton(() => ProfileUseCase(getIt()));
+  getIt.registerLazySingleton<LogoutUseCase>(() => LogoutUseCase(getIt()));
+  getIt.registerLazySingleton<ProfileUseCase>(() => ProfileUseCase(getIt()));
 
   // Tasks
   //   get
-  getIt.registerLazySingleton(() => GetTasksUseCase(getIt()));
-  getIt.registerLazySingleton(() => GetTaskUseCase(getIt()));
+  getIt.registerLazySingleton<GetTasksUseCase>(() => GetTasksUseCase(getIt()));
+  getIt.registerLazySingleton<GetTaskUseCase>(() => GetTaskUseCase(getIt()));
 
   //   post
-  getIt.registerLazySingleton(() => AddTaskUseCase(getIt()));
-  getIt.registerLazySingleton(() => EditTaskUseCase(getIt()));
-  getIt.registerLazySingleton(() => UploadImageUseCase(getIt()));
-  getIt.registerLazySingleton(() => DeleteTaskUseCase(getIt()));
+  getIt.registerLazySingleton<AddTaskUseCase>(() => AddTaskUseCase(getIt()));
+  getIt.registerLazySingleton<EditTaskUseCase>(() => EditTaskUseCase(getIt()));
+  getIt.registerLazySingleton<UploadImageUseCase>(() => UploadImageUseCase(getIt()));
+  getIt.registerLazySingleton<DeleteTaskUseCase>(() => DeleteTaskUseCase(getIt()));
 
   // ----
   // Cubit

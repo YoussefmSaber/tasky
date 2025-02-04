@@ -14,6 +14,7 @@ import 'package:tasky/routes.dart';
 
 import '../cubit/new_task_cubit.dart';
 
+/// A page for creating a new task.
 class NewTaskPage extends StatefulWidget {
   const NewTaskPage({super.key});
 
@@ -21,6 +22,7 @@ class NewTaskPage extends StatefulWidget {
   State<NewTaskPage> createState() => _NewTaskPageState();
 }
 
+/// State class for `NewTaskPage`.
 class _NewTaskPageState extends State<NewTaskPage> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
@@ -30,6 +32,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
   String? _selectedPriority;
   final _formKey = GlobalKey<FormState>();
 
+  /// Picks an image from the desktop file picker.
   Future<void> _pickDesktopImage() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -48,6 +51,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
     }
   }
 
+  /// Picks an image from the specified [source].
   Future<void> _pickImage(ImageSource source) async {
     try {
       final XFile? image = await _picker.pickImage(source: source);
@@ -63,6 +67,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
     }
   }
 
+  /// Shows a dialog for selecting an image source.
   void _showImagePickerDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -150,18 +155,18 @@ class _NewTaskPageState extends State<NewTaskPage> {
                           onTap: () => _showImagePickerDialog(context),
                           child: _selectedImage != null
                               ? Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: Image.file(
-                                        _selectedImage!,
-                                        height: 250,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ],
-                                )
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.file(
+                                  _selectedImage!,
+                                  height: 250,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ],
+                          )
                               : SvgPicture.asset(Images.addImage),
                         ),
                       ),
@@ -202,13 +207,14 @@ class _NewTaskPageState extends State<NewTaskPage> {
     );
   }
 
+  /// Builds a text field with the specified [label], [hint], and [controller].
   Widget _buildTextField(
-    String label,
-    String? hint, {
-    required TextEditingController controller,
-    bool isMultiline = false,
-    String? Function(String?)? validator,
-  }) {
+      String label,
+      String? hint, {
+        required TextEditingController controller,
+        bool isMultiline = false,
+        String? Function(String?)? validator,
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Column(
@@ -233,7 +239,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
     );
   }
 
-  /// Priority selection with validation
+  /// Builds the priority selector widget with validation.
   Widget _buildPrioritySelector() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -263,7 +269,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
     );
   }
 
-  /// Date selection with validation
+  /// Builds the date selector widget with validation.
   Widget _buildDateSelector() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -292,6 +298,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
     );
   }
 
+  /// Adds a new task with the provided details.
   Future<void> _addTask(BuildContext context) async {
     if (_selectedImage == null) {
       showAppSnackBar(
@@ -319,7 +326,7 @@ class _NewTaskPageState extends State<NewTaskPage> {
             context: context);
         Navigator.of(context).pushNamedAndRemoveUntil(
           RouteGenerator.home,
-          (route) => false,
+              (route) => false,
         );
       }
     } catch (e) {

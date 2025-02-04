@@ -6,7 +6,9 @@ import 'package:tasky/features/onboarding/presentation/cubit/onboarding_cubit.da
 import 'package:tasky/features/onboarding/presentation/states/onboarding_states.dart';
 import 'package:tasky/routes.dart';
 
+/// A stateless widget that represents the onboarding page.
 class OnboardPage extends StatelessWidget {
+  /// Creates an instance of [OnboardPage].
   const OnboardPage({super.key});
 
   @override

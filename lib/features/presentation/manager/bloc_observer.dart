@@ -7,7 +7,6 @@ class StateObserver extends BlocObserver {
   /// Logs the creation of the Bloc.
   @override
   void onCreate(BlocBase bloc) {
-    print('onCreate -- ${bloc.runtimeType}');
     super.onCreate(bloc);
   }
 
@@ -16,7 +15,6 @@ class StateObserver extends BlocObserver {
   /// Logs the state change of the Bloc.
   @override
   void onChange(BlocBase bloc, Change change) {
-    print('onChange -- ${bloc.runtimeType}, $change');
     super.onChange(bloc, change);
   }
 
@@ -25,7 +23,6 @@ class StateObserver extends BlocObserver {
   /// Logs the error encountered by the Bloc.
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    print('onError -- ${bloc.runtimeType}, $error');
     super.onError(bloc, error, stackTrace);
   }
 
@@ -34,7 +31,6 @@ class StateObserver extends BlocObserver {
   /// Logs the closure of the Bloc.
   @override
   void onClose(BlocBase bloc) {
-    print('onClose -- ${bloc.runtimeType}');
     super.onClose(bloc);
   }
 }

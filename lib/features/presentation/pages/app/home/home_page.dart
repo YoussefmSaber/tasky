@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconly/iconly.dart';
 import 'package:tasky/core/core.dart';
+import 'package:tasky/core/styles/snackbar.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
 import 'package:tasky/features/presentation/widgets/loading/task_item_loading.dart';
 import 'package:tasky/features/presentation/widgets/task_item.dart';
@@ -36,7 +37,10 @@ class _HomePageState extends State<HomePage> {
     if ((controller.position.maxScrollExtent == controller.offset) && hasMore) {
       page++;
       context.read<HomeCubit>().getTasks(page);
-      hasMore = context.read<HomeCubit>().filteredTasks.length < page * 20;
+      hasMore = context
+          .read<HomeCubit>()
+          .filteredTasks
+          .length < page * 20;
     }
   }
 
@@ -55,51 +59,24 @@ class _HomePageState extends State<HomePage> {
           );
         }
         if (state is GetTasksErrorState) {
-          // Handle error, e.g., show a snackbar
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-        if (state is TaskDeletingState) {
-          showDialog(
-              context: context,
-              builder: (dialogContext) {
-                return AlertDialog(
-                    title: Text(
-                      "Deleting task?",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    content: Text(
-                      "By doing this you are going to delete the task. Are you sure?",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            context.read<HomeCubit>().deleteTask(state.taskId);
-                          },
-                          child: Text(
-                            "Sure",
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.inprogressTextColor),
-                          )),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(dialogContext);
-                          },
-                          child: Text(
-                            "I think not",
-                            style: TextStyle(
-                                fontSize: 12, color: AppColors.errorTextColor),
-                          )),
-                    ]);
-              });
+          showAppSnackBar(message: state.message,
+              backgroundColor: AppColors.errorBackgroundColor,
+              textColor: AppColors.errorTextColor,
+              context: context);
         }
         if (state is TaskDeletedState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Task Deleted Successfully")),
-          );
+          showAppSnackBar(
+              message: "Task Deleted Successfully",
+              textColor: AppColors.successTextColor,
+              backgroundColor: AppColors.successBackgroundColor,
+              context: context);
+        }
+        if (state is TaskDeleteErrorState) {
+          showAppSnackBar(
+              message: state.message,
+              textColor: AppColors.errorTextColor,
+              backgroundColor: AppColors.errorBackgroundColor,
+              context: context);
         }
       },
       builder: (builderContext, state) {
@@ -158,42 +135,42 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: state is TasksLoadingState
                         ? ListView.separated(
-                            itemBuilder: (context, index) => TaskItemLoading(),
-                            separatorBuilder: (context, index) =>
-                                SizedBox(height: 8),
-                            itemCount: 10)
+                        itemBuilder: (context, index) => TaskItemLoading(),
+                        separatorBuilder: (context, index) =>
+                            SizedBox(height: 8),
+                        itemCount: 10)
                         : RefreshIndicator(
-                            onRefresh: () async {
-                              page = 1;
-                              context.read<HomeCubit>().getTasks(page);
-                            },
-                            child: ListView.builder(
-                              controller: controller,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              itemCount: context
-                                      .read<HomeCubit>()
-                                      .filteredTasks
-                                      .length +
-                                  1,
-                              itemBuilder: (context, index) {
-                                if (index <
-                                    context
-                                        .read<HomeCubit>()
-                                        .filteredTasks
-                                        .length) {
-                                  return TaskItem(
-                                      task: context
-                                          .read<HomeCubit>()
-                                          .filteredTasks[index]);
-                                } else {
-                                  return state is PaginationLoadingState
-                                      ? TaskItemLoading()
-                                      : const SizedBox();
-                                }
-                              },
-                            ),
-                          ),
+                      onRefresh: () async {
+                        page = 1;
+                        context.read<HomeCubit>().getTasks(page);
+                      },
+                      child: ListView.builder(
+                        controller: controller,
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: context
+                            .read<HomeCubit>()
+                            .filteredTasks
+                            .length +
+                            1,
+                        itemBuilder: (context, index) {
+                          if (index <
+                              context
+                                  .read<HomeCubit>()
+                                  .filteredTasks
+                                  .length) {
+                            return TaskItem(
+                                task: context
+                                    .read<HomeCubit>()
+                                    .filteredTasks[index]);
+                          } else {
+                            return state is PaginationLoadingState
+                                ? TaskItemLoading()
+                                : const SizedBox();
+                          }
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),

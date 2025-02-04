@@ -6,11 +6,13 @@ import 'package:tasky/core/core.dart';
 class PhoneInput extends StatelessWidget {
   /// Controller for the phone number input field.
   final TextEditingController controller;
+  final String? Function(String?) validator;
 
   /// Creates a [PhoneInput] widget.
   ///
   /// The [controller] parameter must not be null.
-  const PhoneInput({super.key, required this.controller});
+  const PhoneInput(
+      {super.key, required this.controller, required this.validator});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class PhoneInput extends StatelessWidget {
         initialValue: initialValue,
         keyboardType: TextInputType.number,
         inputBorder: WidgetStyles.borderStyle,
+        validator: validator,
         onInputChanged: (PhoneNumber value) {
           controller.text = value.phoneNumber!;
         },

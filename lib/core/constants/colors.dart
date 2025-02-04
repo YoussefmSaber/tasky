@@ -11,6 +11,8 @@ class AppColors {
   static const waitingBackgroundColor = Color(0xffffe4f2);
   static const errorTextColor = Color(0xfff32828);
   static const errorBackgroundColor = Color(0xffffe4e4);
+  static const warningTextColor = Color(0xfff59e0b);
+  static const warningBackgroundColor = Color(0xfffff7e6);
   static const successTextColor = Color(0xff59e133);
   static const successBackgroundColor = Color(0xffe6ffe4);
   static const whiteBackground = Color(0xffffffff);

@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky/core/core.dart';
+import 'package:tasky/core/styles/snackbar.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/presentation/pages/app/home/home/home_cubit.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
 
-class TaskItem extends StatelessWidget {
+class TaskItem extends StatefulWidget {
   final TaskData task;
 
   const TaskItem({
@@ -17,51 +18,57 @@ class TaskItem extends StatelessWidget {
   });
 
   @override
+  State<TaskItem> createState() => _TaskItemState();
+}
+
+class _TaskItemState extends State<TaskItem> {
+  @override
   Widget build(BuildContext context) {
     return Card(
         elevation: 0,
         color: Colors.transparent,
         child: ListTile(
-          onTap: () =>
-              Navigator.of(context)
-                  .pushNamed(RouteGenerator.details, arguments: task.id),
+          onTap: () => Navigator.of(context)
+              .pushNamed(RouteGenerator.details, arguments: widget.task.id),
           contentPadding: EdgeInsets.zero,
           leading: ClipOval(
             child: Image.network(
-                "https://todo.iraqsapp.com/images/${task.image}",
+                "https://todo.iraqsapp.com/images/${widget.task.image}",
                 height: 55,
                 width: 55,
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
-                  return CardLoading(height: 55,
+              return loadingProgress != null
+                  ? CardLoading(
+                      height: 55,
                       width: 55,
-                      borderRadius: BorderRadius.circular(50));
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 55,
-                    height: 55,
-                    color: Colors.grey,
-                  );
-                }),
+                      borderRadius: BorderRadius.circular(50))
+                  : child;
+            }, errorBuilder: (context, error, stackTrace) {
+              return Container(
+                width: 55,
+                height: 55,
+                color: Colors.grey,
+              );
+            }),
           ),
           title:
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Expanded(
               child: Text(
-                task.title!,
+                widget.task.title!,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: FontStyles.listTitleStyle,
               ),
             ),
-            ProgressTag(state: task.status!)
+            ProgressTag(state: widget.task.status!)
           ]),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                task.desc!,
+                widget.task.desc!,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style: FontStyles.descriptionStyle,
@@ -70,9 +77,9 @@ class TaskItem extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  PriorityTag(priority: task.priority!),
+                  PriorityTag(priority: widget.task.priority!),
                   Text(
-                    formatIsoDate(task.createdAt!),
+                    formatIsoDate(widget.task.createdAt!),
                     style: FontStyles.disableLabelStyle,
                   )
                 ],
@@ -80,8 +87,7 @@ class TaskItem extends StatelessWidget {
             ],
           ),
           trailing: PopupMenuButton(
-            itemBuilder: (BuildContext context) =>
-            [
+            itemBuilder: (BuildContext context) => [
               PopupMenuItem(
                 value: 'edit',
                 child: Text("Edit", style: FontStyles.menuTextStyle),
@@ -94,7 +100,7 @@ class TaskItem extends StatelessWidget {
             onSelected: (value) {
               if (value == 'edit') {
                 Navigator.of(context)
-                    .pushNamed(RouteGenerator.editTask, arguments: task);
+                    .pushNamed(RouteGenerator.editTask, arguments: widget.task);
               } else if (value == 'delete') {
                 showDialog(
                     context: context,
@@ -112,9 +118,25 @@ class TaskItem extends StatelessWidget {
                             TextButton(
                                 onPressed: () {
                                   Navigator.pop(dialogContext);
+                                },
+                                child: Text(
+                                  "I think not",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.errorTextColor),
+                                )),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(dialogContext);
                                   context
                                       .read<HomeCubit>()
-                                      .deletingTask(task.id!);
+                                      .deletingTask(widget.task.id!);
+                                  showAppSnackBar(
+                                      message: "Task Deleted Successfully!",
+                                      backgroundColor:
+                                          AppColors.successBackgroundColor,
+                                      textColor: AppColors.successTextColor,
+                                      context: context);
                                 },
                                 child: Text(
                                   "Sure",
@@ -122,16 +144,6 @@ class TaskItem extends StatelessWidget {
                                       fontSize: 12,
                                       color: AppColors.inprogressTextColor),
                                 )),
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.pop(dialogContext);
-                                },
-                                child: Text(
-                                  "I think not",
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.errorTextColor),
-                                ))
                           ]);
                     });
               }

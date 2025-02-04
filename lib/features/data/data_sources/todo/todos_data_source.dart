@@ -23,7 +23,8 @@ class TodosDataSource {
   /// Throws an [Exception] if the task addition fails.
   Future<TaskData> addTask(AddTask task) async {
     try {
-      final response = await dioClient.dio.post(ApiEndpoints.todo, data: task.toJson());
+      final response =
+          await dioClient.dio.post(ApiEndpoints.todo, data: task.toJson());
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);
       } else {
@@ -41,7 +42,8 @@ class TodosDataSource {
   /// Throws an [Exception] if the task deletion fails.
   Future<TaskData> deleteTask(String taskId) async {
     try {
-      final response = await dioClient.dio.delete('${ApiEndpoints.todo}/$taskId');
+      final response =
+          await dioClient.dio.delete('${ApiEndpoints.todo}/$taskId');
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);
       } else {
@@ -57,11 +59,10 @@ class TodosDataSource {
   /// Takes an [EditTask] object, a [taskId], and an [accessToken] as parameters.
   /// Returns a [TaskData] object if the task is edited successfully.
   /// Throws an [Exception] if the task editing fails.
-  Future<TaskData> editTask(
-      EditTask editedTask, String taskId) async {
+  Future<TaskData> editTask(EditTask editedTask, String taskId) async {
     try {
-      final response = await dioClient.dio.put("${ApiEndpoints.todo}/$taskId",
-          data: editedTask);
+      final response = await dioClient.dio
+          .put("${ApiEndpoints.todo}/$taskId", data: editedTask);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return TaskData.fromJson(response.data);
       } else {
@@ -79,7 +80,8 @@ class TodosDataSource {
   /// Throws an [Exception] if the task retrieval fails.
   Future<List<TaskData>> getListOfTasks(int page) async {
     try {
-      final response = await dioClient.dio.get(ApiEndpoints.list + page.toString());
+      final response =
+          await dioClient.dio.get(ApiEndpoints.list + page.toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         final List<dynamic> jsonData = response.data;
         final List<TaskData> tasks =
@@ -98,7 +100,7 @@ class TodosDataSource {
   /// Takes a [taskId] and an [accessToken] as parameters.
   /// Returns a [TaskData] object if the task is retrieved successfully.
   /// Throws an [Exception] if the task retrieval fails.
-  Future<TaskData> getTask(String taskId ) async {
+  Future<TaskData> getTask(String taskId) async {
     try {
       final response = await dioClient.dio.get('${ApiEndpoints.todo}/$taskId');
       if (response.statusCode == 200 || response.statusCode == 201) {

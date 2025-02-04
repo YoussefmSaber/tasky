@@ -22,8 +22,8 @@ class Strings {
       "project-wise conveniently!";
   static const profile = "Profile";
   static const taskDetails = "Task Details";
-  static const states = ['waiting', 'inProgress', 'finished'];
-  static const filters = ['ALL', 'waiting', 'inProgress', 'finished'];
+  static const states = ['waiting', 'inprogress', 'finished'];
+  static const filters = ['ALL', 'waiting', 'inprogress', 'finished'];
   static const priorities = [
     'low',
     'medium',

@@ -10,7 +10,7 @@ class PasswordInput extends StatefulWidget {
   final TextEditingController controller;
 
   /// The validator function for the input.
-  final String? Function(String?)? validator;
+  final String? Function(String?) validator;
 
   /// Creates a [PasswordInput] widget.
   const PasswordInput({

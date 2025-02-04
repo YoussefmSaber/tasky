@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasky/core/core.dart';
+import 'package:tasky/core/styles/snackbar.dart';
 import 'package:tasky/features/presentation/pages/auth/login/cubit/login_states.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
@@ -26,8 +27,42 @@ class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController passwordController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    super.dispose();
+    phoneController.dispose();
+    passwordController.dispose();
+    context.read<LoginCubit>().close();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<LoginCubit, LoginState>(
+      listener: (BuildContext context, LoginState state) {
+        if (state is LoginSuccess) {
+          Navigator.of(context).pop;
+          showAppSnackBar(
+              message: "Login Successful!",
+              textColor: AppColors.successTextColor,
+              backgroundColor: AppColors.successBackgroundColor,
+              context:  context);
+          Navigator.of(context).pushNamed(RouteGenerator.home);
+          phoneController.clear();
+          passwordController.clear();
+        }
+        if (state is LoginError) {
+          Navigator.of(context).pop;
+        }
+      },
+      builder: (context, state) {
+        return _buildLoginScreen(context, state);
+      },
+    );
+  }
+
+  Widget _buildLoginScreen(BuildContext context, LoginState state) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -40,35 +75,55 @@ class _LoginPageState extends State<LoginPage> {
                 style: FontStyles.mainTextStyle,
               ),
             ),
-            _buildPadding(
-              child: PhoneInput(controller: phoneController),
-            ),
-            _buildPadding(
-              child: PasswordInput(
-                controller: passwordController,
-                inputType: TextInputType.visiblePassword,
-                validator: (String? value) {
-                  if (value!.isEmpty) {
-                    return 'Password is required';
-                  }
-                  return null;
-                },
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _buildPadding(
+                    child: PhoneInput(
+                      controller: phoneController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Phone number is required';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  _buildPadding(
+                    child: PasswordInput(
+                      controller: passwordController,
+                      inputType: TextInputType.visiblePassword,
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password is required';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  state is LoginError
+                      ? Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            state.message,
+                            style: TextStyle(color: AppColors.errorTextColor),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                  _buildPadding(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: SignButton(
+                        text: Strings.signin,
+                        onTap: () => _onLoginButtonPressed(context),
+                      ),
+                    ),
+                  ),
+                  _buildFooter(context)
+                ],
               ),
             ),
-            _buildPadding(
-              child: SizedBox(
-                width: double.infinity,
-                child: SignButton(
-                  text: Strings.signin,
-                  onTap: () => _onLoginButtonPressed(context),
-                ),
-              ),
-            ),
-            LoginStateBuilder(
-              phoneController: phoneController,
-              passwordController: passwordController,
-            ),
-            _buildFooter(context),
           ],
         ),
       ),
@@ -83,30 +138,33 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _onLoginButtonPressed(BuildContext context) {
-    final phone = phoneController.text;
-    final password = passwordController.text;
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Wait while we log you in"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min, // Wrap content vertically
-              children: [
-                CircularProgressIndicator(
-                  color: AppColors.inprogressTextColor,
-                ),
-              ],
-            ),
-            backgroundColor: Colors.white,
-            surfaceTintColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.all(Radius.circular(8)), // Adjust corner radius
-            ),
-          );
-        });
-    context.read<LoginCubit>().login(phone: phone, password: password);
+    if (_formKey.currentState!.validate()) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Logging in"),
+              content: Column(
+                // Wrap content vertically
+                children: [
+                  Text("Please wait while we log you in"),
+                  SizedBox(height: 8),
+                  CircularProgressIndicator(
+                    color: AppColors.inprogressTextColor,
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                    Radius.circular(8)), // Adjust corner radius
+              ),
+            );
+          });
+      context.read<LoginCubit>().login(
+          phone: phoneController.text, password: passwordController.text);
+    }
   }
 
   Widget _buildFooter(BuildContext context) {
@@ -126,42 +184,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class LoginStateBuilder extends StatelessWidget {
-  final TextEditingController phoneController;
-  final TextEditingController passwordController;
-
-  const LoginStateBuilder({
-    super.key,
-    required this.phoneController,
-    required this.passwordController,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<LoginCubit, LoginState>(
-      builder: (BuildContext context, LoginState state) {
-        if (state is LoginSuccess) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            phoneController.clear();
-            passwordController.clear();
-            Navigator.of(context).pushNamed(RouteGenerator.home);
-          });
-          return const SizedBox.shrink();
-        } else if (state is LoginError) {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              state.message,
-              style: TextStyle(color: AppColors.errorTextColor),
-            ),
-          );
-        }
-        return const SizedBox.shrink();
-      },
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasky/core/core.dart';
+import 'package:tasky/core/styles/snackbar.dart';
 import 'package:tasky/features/domain/entities/auth/user_register.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
@@ -8,17 +9,42 @@ import 'package:tasky/routes.dart';
 import 'cubit/register_cubit.dart';
 import 'cubit/register_state.dart';
 
-class RegisterPage extends StatelessWidget {
-  RegisterPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
+
   final nameController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   final confirmPasswordController = TextEditingController();
+
   final yearsOfExpController = TextEditingController();
+
   final addressController = TextEditingController();
+
   final phoneController = TextEditingController();
+
   final levelController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    yearsOfExpController.dispose();
+    addressController.dispose();
+    phoneController.dispose();
+    levelController.dispose();
+    context.read<RegisterCubit>().close();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +53,15 @@ class RegisterPage extends StatelessWidget {
         child: BlocConsumer<RegisterCubit, RegisterState>(
           listener: (BuildContext context, RegisterState state) {
             if (state is RegisterSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Registration successful!")),
-              );
+              showAppSnackBar(
+                  message: "Registration successful!",
+                  textColor: AppColors.successTextColor,
+                  backgroundColor: AppColors.successBackgroundColor,
+                  context: context);
               Navigator.of(context).pushNamed(RouteGenerator.home);
-            } else if (state is RegisterError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+            }
+            if (state is RegisterError) {
+              Navigator.of(context).pop();
             }
           },
           builder: (context, state) {
@@ -50,8 +77,11 @@ class RegisterPage extends StatelessWidget {
                       children: [
                         _buildHeader(),
                         _buildInputFields(),
-                        if (state is RegisterLoading)
-                          const Center(child: CircularProgressIndicator()),
+                        state is RegisterError
+                            ? Center(
+                                child: Text(state.message,
+                                    style: FontStyles.errorMenuTextStyle))
+                            : SizedBox.shrink(),
                         _buildSignUpButton(context),
                         _buildFooter(context),
                       ],
@@ -81,22 +111,44 @@ class RegisterPage extends StatelessWidget {
       children: [
         Padding(
           padding: Constants.inputPadding,
-          child: TextInput(
-            hint: Strings.registerName,
+          child: TextFormField(
             controller: nameController,
-            inputType: TextInputType.name,
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Name is required' : null,
+            decoration: InputDecoration(
+              hintText: Strings.registerName, // Added
+              hintStyle: FontStyles.hintTextStyle, // labelText
+              border: WidgetStyles.borderStyle,
+              focusedBorder: WidgetStyles.borderStyle,
+            ),
+            keyboardType: TextInputType.name,
           ),
         ),
         Padding(
           padding: Constants.inputPadding,
-          child: PhoneInput(controller: phoneController),
+          child: PhoneInput(
+              controller: phoneController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Phone number is required';
+                }
+                return null;
+              }),
         ),
         Padding(
           padding: Constants.inputPadding,
-          child: TextInput(
-            hint: Strings.registerYearsOfExp,
+          child: TextFormField(
             controller: yearsOfExpController,
-            inputType: TextInputType.number,
+            keyboardType: TextInputType.number,
+            validator: (value) => value == null || value.isEmpty
+                ? 'Years of experience is required'
+                : null,
+            decoration: InputDecoration(
+              hintText: Strings.registerYearsOfExp, // Added
+              hintStyle: FontStyles.hintTextStyle, // labelText
+              border: WidgetStyles.borderStyle,
+              focusedBorder: WidgetStyles.borderStyle,
+            ),
           ),
         ),
         Padding(
@@ -109,11 +161,16 @@ class RegisterPage extends StatelessWidget {
         ),
         Padding(
           padding: Constants.inputPadding,
-          child: TextInput(
-            hint: Strings.registerAddress,
-            controller: addressController,
-            inputType: TextInputType.text,
-          ),
+          child: TextFormField(
+              controller: addressController,
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Address is required' : null,
+              decoration: InputDecoration(
+                hintText: Strings.registerAddress, // Added
+                hintStyle: FontStyles.hintTextStyle, // labelText
+                border: WidgetStyles.borderStyle,
+                focusedBorder: WidgetStyles.borderStyle,
+              )),
         ),
         Padding(
           padding: Constants.inputPadding,
@@ -121,8 +178,10 @@ class RegisterPage extends StatelessWidget {
               controller: passwordController,
               inputType: TextInputType.visiblePassword,
               validator: (String? value) {
-                if (value!.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return 'Password is required';
+                } else if (value.length < 6) {
+                  return 'Password must be at least 6 characters long';
                 }
                 return null;
               }),
@@ -133,7 +192,7 @@ class RegisterPage extends StatelessWidget {
               controller: confirmPasswordController,
               inputType: TextInputType.visiblePassword,
               validator: (String? value) {
-                if (value!.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return 'Password is required';
                 } else if (value != passwordController.text) {
                   return 'Passwords do not match';
@@ -155,6 +214,30 @@ class RegisterPage extends StatelessWidget {
           text: Strings.signup,
           onTap: () {
             if (_formKey.currentState!.validate()) {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text("Registering"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        // Wrap content vertically
+                        children: [
+                          Text("Wait while we register your new account"),
+                          SizedBox(height: 8),
+                          CircularProgressIndicator(
+                            color: AppColors.inprogressTextColor,
+                          ),
+                        ],
+                      ),
+                      backgroundColor: Colors.white,
+                      surfaceTintColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(8)), // Adjust corner radius
+                      ),
+                    );
+                  });
               context.read<RegisterCubit>().register(
                       userData: UserRegister(
                     phone: phoneController.text,

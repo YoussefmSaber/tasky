@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:tasky/features/domain/entities/task/add_task.dart';
 import 'package:tasky/features/domain/use_cases/task/post/add_task_use_case.dart';
-import 'package:tasky/features/domain/use_cases/task/post/delete_task_use_case.dart';
 import 'package:tasky/features/domain/use_cases/task/post/upload_image_use_case.dart';
 
 import 'new_task_states.dart';
@@ -11,12 +10,11 @@ import 'new_task_states.dart';
 /// Cubit class to manage the state of adding, editing, deleting, and uploading tasks.
 class NewTaskCubit extends Cubit<NewTaskStates> {
   final AddTaskUseCase addTaskUseCase;
-  final DeleteTaskUseCase deleteTaskUseCase;
   final UploadImageUseCase uploadImageUseCase;
 
   /// Constructor to initialize the use cases and set the initial state.
   NewTaskCubit(
-      this.addTaskUseCase, this.deleteTaskUseCase, this.uploadImageUseCase)
+      this.addTaskUseCase, this.uploadImageUseCase)
       : super(NewTaskInitialState());
 
   /// Method to upload an image.

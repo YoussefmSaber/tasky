@@ -85,9 +85,9 @@ void setup(SharedPreferenceService sharedPrefService) {
       logoutUseCase: getIt(),
       deleteTaskUseCase: getIt()));
   getIt.registerLazySingleton<DetailsCubit>(
-      () => DetailsCubit(getIt(), getIt(), getIt()));
+      () => DetailsCubit(getIt(), getIt()));
   getIt.registerLazySingleton<NewTaskCubit>(
-      () => NewTaskCubit(getIt(), getIt(), getIt()));
+      () => NewTaskCubit(getIt(), getIt()));
   getIt.registerLazySingleton<EditTaskCubit>(
       () => EditTaskCubit(getIt(), getIt()));
 

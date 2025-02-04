@@ -33,6 +33,7 @@ class SignButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16.0),
         child: Text(text, style: FontStyles.buttonTextStyle),
       ),
+
     );
   }
 }

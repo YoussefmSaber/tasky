@@ -22,6 +22,12 @@ class TaskDeletedState extends HomeState {
   TaskDeletedState(this.deletedTask);
 }
 
+class TaskDeleteErrorState extends HomeState {
+  final String message;
+
+  TaskDeleteErrorState(this.message);
+}
+
 /// State indicating that pagination is currently loading.
 class PaginationLoadingState extends HomeState {}
 

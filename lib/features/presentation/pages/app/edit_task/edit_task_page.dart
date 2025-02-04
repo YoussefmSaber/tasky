@@ -8,6 +8,7 @@ import 'package:tasky/core/constants/colors.dart';
 import 'package:tasky/core/constants/strings.dart';
 import 'package:tasky/core/images/icons.dart';
 import 'package:tasky/core/styles/fonts.dart';
+import 'package:tasky/core/styles/snackbar.dart';
 import 'package:tasky/features/domain/entities/task/edit_task.dart';
 import 'package:tasky/features/domain/entities/task/task_data.dart';
 import 'package:tasky/features/presentation/pages/app/edit_task/cubit/edit_task_cubit.dart';
@@ -32,6 +33,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   late TextEditingController descController;
   File? _selectedImage;
   bool _hasUnsavedChanges = false;
+  final _formKey = GlobalKey<FormState>();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -60,12 +62,6 @@ class _EditTaskPageState extends State<EditTaskPage> {
     titleController.dispose();
     descController.dispose();
     super.dispose();
-  }
-
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   void _onWillPop() async {
@@ -106,7 +102,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     );
   }
 
-  Future<void> _pickDesktopImage() async {
+  Future<void> _pickDesktopImage(BuildContext context) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
@@ -116,7 +112,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
         setState(() => _selectedImage = File(result.files.single.path!));
       }
     } catch (e) {
-      _showSnackbar('Error picking image: $e');
+      showAppSnackBar(
+          message: "Error picking image: $e",
+          backgroundColor: AppColors.errorBackgroundColor,
+          textColor: AppColors.errorTextColor,
+          context: context);
     }
   }
 
@@ -127,7 +127,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
         setState(() => _selectedImage = File(image.path));
       }
     } catch (e) {
-      _showSnackbar('Error selecting image: $e');
+      showAppSnackBar(
+          message: "Error selecting image: $e",
+          backgroundColor: AppColors.errorBackgroundColor,
+          textColor: AppColors.errorTextColor,
+          context: context);
     }
   }
 
@@ -146,7 +150,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
                   title: const Text('Choose from Computer'),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickDesktopImage();
+                    _pickDesktopImage(context);
                   },
                 ),
               if (!Platform.isWindows) ...[
@@ -175,11 +179,10 @@ class _EditTaskPageState extends State<EditTaskPage> {
   }
 
   bool _validateInputs() {
-    if (titleController.text.trim().isEmpty) {
-      _showSnackbar('Title is required');
-      return false;
+    if (_formKey.currentState!.validate()) {
+      return true;
     }
-    return true;
+    return false;
   }
 
   @override
@@ -189,7 +192,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
         if (state is EditTaskSuccess) {
           Navigator.pop(context, true);
         } else if (state is EditTaskError) {
-          _showSnackbar(state.error);
+          showAppSnackBar(
+              message: state.error,
+              backgroundColor: AppColors.errorBackgroundColor,
+              textColor: AppColors.errorTextColor,
+              context: context);
         }
       },
       builder: (context, state) {
@@ -209,145 +216,150 @@ class _EditTaskPageState extends State<EditTaskPage> {
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: _selectedImage != null
-                            ? Image.file(
-                                _selectedImage!,
-                                height: 250,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              )
-                            : Image.network(
-                                "https://todo.iraqsapp.com/images/${widget.task.image}",
-                                height: 250,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Container(
-                                    height: 250,
-                                    width: double.infinity,
-                                    color: AppColors.secondaryTextColor,
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  );
-                                },
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    height: 250,
-                                    width: double.infinity,
-                                    color: AppColors.secondaryTextColor,
-                                    child: Icon(Icons.error),
-                                  );
-                                },
-                              ),
-                      ),
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: IconButton(
-                            onPressed: () => _showImagePickerDialog(context),
-                            icon: Icon(Icons.edit, size: 18.0),
-                          ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: _selectedImage != null
+                              ? Image.file(
+                                  _selectedImage!,
+                                  height: 250,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  "https://todo.iraqsapp.com/images/${widget.task.image}",
+                                  height: 250,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Container(
+                                      height: 250,
+                                      width: double.infinity,
+                                      color: AppColors.secondaryTextColor,
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 250,
+                                      width: double.infinity,
+                                      color: AppColors.secondaryTextColor,
+                                      child: Icon(Icons.error),
+                                    );
+                                  },
+                                ),
                         ),
-                      ),
-                      Positioned(
-                        top: 8,
-                        left: 8,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedImage = null;
-                              });
-                            },
-                            icon: Icon(
-                              Icons.remove,
-                              size: 18.0,
-                              color: Colors.redAccent,
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: IconButton(
+                              onPressed: () => _showImagePickerDialog(context),
+                              icon: Icon(Icons.edit, size: 18.0),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    controller: titleController,
-                    maxLength: 50,
-                    maxLines: 1,
-                    decoration: InputDecoration(
-                      hintText: "Title *",
-                      hintStyle: FontStyles.secondaryTextStyle,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        if (_selectedImage != null)
+                          Positioned(
+                          top: 8,
+                          left: 8,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _selectedImage = null;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.remove,
+                                size: 18.0,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      controller: titleController,
+                      maxLines: 1,
+                      validator: (value) => value!.isEmpty ? 'Title is required' : null,
+                      decoration: InputDecoration(
+                        hintText: "Title *",
+                        hintStyle: FontStyles.secondaryTextStyle,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  TextField(
-                    controller: descController,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      hintText: "Description",
-                      hintStyle: FontStyles.secondaryTextStyle,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      controller: descController,
+                      maxLines: 5,
+                      validator: (value) => value!.isEmpty ? 'Description is required' : null,
+                      decoration: InputDecoration(
+                        hintText: "Description",
+                        hintStyle: FontStyles.secondaryTextStyle,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  TaskState(
-                    state: editedState,
-                    onStateSelected: (value) {
-                      setState(() => editedState = value);
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  PriorityCard(
-                    priority: editedPriority,
-                    onPrioritySelected: (value) {
-                      setState(() => editedPriority = value);
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: SignButton(
-                      text: "Update Task",
-                      onTap: () async {
-                        if (_validateInputs()) {
-                          context.read<EditTaskCubit>().saveTask(
-                                EditTask(
-                                  title: titleController.text.trim(),
-                                  desc: descController.text.trim(),
-                                  priority: editedPriority,
-                                  status: editedState,
-                                  image: _selectedImage != null
-                                      ? await context
-                                              .read<EditTaskCubit>()
-                                              .uploadImage(_selectedImage!)
-                                      : widget.task.image!,
-                                ),
-                                widget.task.id!,
-                              );
-                        }
+                    SizedBox(height: 16),
+                    TaskState(
+                      state: editedState,
+                      onStateSelected: (value) {
+                        setState(() => editedState = value);
                       },
                     ),
-                  ),
-                  SizedBox(height: 16),
-                ],
+                    SizedBox(height: 16),
+                    PriorityCard(
+                      priority: editedPriority,
+                      onPrioritySelected: (value) {
+                        setState(() => editedPriority = value);
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SignButton(
+                        text: "Update Task",
+                        onTap: () async {
+                          if (_validateInputs()) {
+                            context.read<EditTaskCubit>().saveTask(
+                                  EditTask(
+                                    title: titleController.text.trim(),
+                                    desc: descController.text.trim(),
+                                    priority: editedPriority,
+                                    status: editedState,
+                                    image: _selectedImage != null
+                                        ? await context
+                                            .read<EditTaskCubit>()
+                                            .uploadImage(_selectedImage!)
+                                        : widget.task.image!,
+                                  ),
+                                  widget.task.id!,
+                                );
+                          }
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                ),
               ),
             ),
           ),

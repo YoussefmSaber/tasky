@@ -56,7 +56,7 @@ class _TaskStateState extends State<TaskState> {
           underline: const SizedBox(),
           iconSize: 24,
           isExpanded: true,
-          value: stateText,
+          value: stateText.toLowerCase(),
           onChanged: (String? newValue) {
             if (newValue != null) {
               setState(() {

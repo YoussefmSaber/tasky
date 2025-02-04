@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tasky/core/core.dart';
+import 'package:tasky/core/styles/snackbar.dart';
 import 'package:tasky/features/presentation/pages/app/details/details/details_cubit.dart';
 import 'package:tasky/features/presentation/pages/app/details/details/details_states.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
+
 
 class DetailsPage extends StatefulWidget {
   final String taskId;
@@ -29,183 +31,175 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DetailsCubit, DetailsState>(builder: (context, state) {
-      return Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: AppIcons.backArrow),
-            title: Text(
-              Strings.taskDetails,
-              style: FontStyles.textTitleStyle,
-            ),
-            actions: [
-              state is GetDetailsSuccessState
-                  ? PopupMenuButton(
-                      itemBuilder: (context) => [
-                            PopupMenuItem(
-                                child: TextButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, RouteGenerator.editTask,
-                                          arguments: state.tasks);
-                                    },
-                                    child: Text(
-                                      "Edit",
-                                      style: FontStyles.menuTextStyle,
-                                    ))),
-                            PopupMenuItem(
-                              child: TextButton(
-                                  onPressed: () {
-                                    context.read<DetailsCubit>().deletingTask();
-                                  },
-                                  child: Text(
-                                    "Delete",
-                                    style: FontStyles.errorMenuTextStyle,
-                                  )),
-                            )
-                          ])
-                  : Container()
-            ],
-          ),
-          body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: state is DetailsLoadingState
-                  ? Center(child: CircularProgressIndicator())
-                  : state is GetDetailsSuccessState
-                      ? SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Image.network(
-                                    "https://todo.iraqsapp.com/images/${state.tasks.image!}",
-                                    height: 250,
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                  return CircleAvatar(
-                                    backgroundColor:
-                                        AppColors.secondaryTextColor,
-                                  );
-                                }),
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              Text(
-                                state.tasks.title!,
-                                style: FontStyles.textTitleStyle,
-                                textAlign: TextAlign.start,
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                state.tasks.desc!,
-                                style: FontStyles.secondaryTextStyle,
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              DisplayDate(date: formatIsoDate(state.tasks.createdAt!)),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              TaskState(
-                                state: state.tasks.status!,
-                                onStateSelected: (value) {
-                                  editedState = value;
-                                },
-                              ),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              PriorityCard(
-                                  priority: state.tasks.priority!,
-                                  onPrioritySelected: (value) {
-                                    editedPriority = value;
-                                  }),
-                              SizedBox(
-                                height: 16,
-                              ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: QrImageView(
-                                  padding: EdgeInsets.all(32),
-                                  data: state.tasks.id!,
-                                  version: QrVersions.auto,
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      : state is DetailsErrorState
-                          ? Center(child: Text(state.message))
-                          : Center(child: Text("Something Wrong happened"))));
-    }, listener: (pageContext, state) {
-      if (state is DetailsTaskDeletingState) {
-        showDialog(
+    return BlocConsumer<DetailsCubit, DetailsState>(
+      listener: (context, state) {
+        if (state is DetailsTaskDeletedState) {
+          showAppSnackBar(
+            message: "Task Deleted Successfully",
+            backgroundColor: AppColors.successBackgroundColor,
+            textColor: AppColors.successTextColor,
             context: context,
-            builder: (dialogContext) {
-              return AlertDialog(
-                  title: Text(
-                    "Deleting task?",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  content: Text(
-                    "By doing this you are going to delete the task. Are you sure?",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  actions: [
-                    TextButton(
+          );
+          Navigator.of(context).pop();
+          Navigator.pushNamedAndRemoveUntil(
+              context, RouteGenerator.home, (route) => false);
+        }
+
+        if (state is DetailsErrorState) {
+          showAppSnackBar(
+            message: state.message,
+            backgroundColor: AppColors.errorBackgroundColor,
+            textColor: AppColors.errorTextColor,
+            context: context,
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is DetailsLoadingState) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (state is GetDetailsSuccessState || state is DetailsTaskDeletingState) {
+          final task = (state is GetDetailsSuccessState)
+              ? state.tasks
+              : (state as DetailsTaskDeletingState).tasks;
+
+          return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: AppIcons.backArrow),
+              title: Text(Strings.taskDetails, style: FontStyles.textTitleStyle),
+              actions: [
+                PopupMenuButton(
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      child: TextButton(
                         onPressed: () {
-                          Navigator.pop(dialogContext);
+                          Navigator.pushNamed(
+                              context, RouteGenerator.editTask,
+                              arguments: task);
                         },
-                        child: Text(
-                          "I think not",
-                          style: TextStyle(
-                              fontSize: 12, color: AppColors.errorTextColor),
-                        )),
-                    TextButton(
+                        child: Text("Edit", style: FontStyles.menuTextStyle),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: TextButton(
                         onPressed: () {
-                          context
-                              .read<DetailsCubit>()
-                              .deleteTask(widget.taskId);
+                          showDeleteDialog(context);
                         },
-                        child: Text(
-                          "Sure",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.inprogressTextColor),
-                        )),
-                  ]);
-            });
-      }
-      if (state is DetailsTaskDeletedState) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Task Deleted Successfully")),
+                        child: Text("Delete", style: FontStyles.errorMenuTextStyle),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.network(
+                        "https://todo.iraqsapp.com/images/${task.image!}",
+                        height: 250,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 250,
+                            width: double.infinity,
+                            color: Colors.grey,
+                            child: Center(
+                              child: Text(
+                                "Image not found",
+                                style: FontStyles.errorMenuTextStyle,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Text(task.title!, style: FontStyles.textTitleStyle),
+                    SizedBox(height: 8),
+                    Text(task.desc!, style: FontStyles.secondaryTextStyle),
+                    SizedBox(height: 16),
+                    DisplayDate(date: formatIsoDate(task.createdAt!)),
+                    SizedBox(height: 16),
+                    TaskState(
+                      state: task.status!,
+                      onStateSelected: (value) {
+                        editedState = value;
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    PriorityCard(
+                      priority: task.priority!,
+                      onPrioritySelected: (value) {
+                        editedPriority = value;
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: QrImageView(
+                        padding: EdgeInsets.all(32),
+                        data: task.id!,
+                        version: QrVersions.auto,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return Center(child: Text("Something went wrong"));
+      },
+    );
+  }
+
+  void showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text("Deleting task?", style: TextStyle(fontSize: 16)),
+          content: Text(
+            "By doing this you are going to delete the task. Are you sure?",
+            style: TextStyle(fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                "I think not",
+                style: TextStyle(fontSize: 12, color: AppColors.errorTextColor),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                context.read<DetailsCubit>().deleteTask(widget.taskId);
+                Navigator.pop(dialogContext);
+              },
+              child: Text(
+                "Sure",
+                style: TextStyle(fontSize: 14, color: AppColors.inprogressTextColor),
+              ),
+            ),
+          ],
         );
-        Navigator.pop(pageContext);
-        Navigator.pushNamedAndRemoveUntil(
-            context, RouteGenerator.home, (route) => false);
-      }
-      if (state is DetailsErrorState) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.message)),
-        );
-      }
-    });
+      },
+    );
   }
 
   String formatIsoDate(String isoDate) {
-    // Parse the ISO 8601 string to a DateTime object
     DateTime dateTime = DateTime.parse(isoDate);
-
-    // Format the DateTime object to "21 January 2025"
     return DateFormat("d MMMM yyyy").format(dateTime);
   }
 }

@@ -52,7 +52,7 @@ class HomeCubit extends Cubit<HomeState> {
   void _applyFilter() {
     filteredTasks = currentFilter.isEmpty
         ? tasks
-        : tasks.where((task) => task.status == currentFilter).toList();
+        : tasks.where((task) => task.status?.toLowerCase() == currentFilter).toList();
     emit(GetTasksSuccessState(tasks: tasks, filteredTasks: filteredTasks, hasMore: true));
   }
 
@@ -63,7 +63,7 @@ class HomeCubit extends Cubit<HomeState> {
       case 1:
         return 'waiting';
       case 2:
-        return 'inProgress';
+        return 'inprogress';
       default:
         return 'finished';
     }
@@ -84,7 +84,7 @@ class HomeCubit extends Cubit<HomeState> {
       // Emit the deleted state first
       emit(TaskDeletedState(deletedTask));
     } catch (e) {
-      emit(GetTasksErrorState(e.toString()));
+      emit(TaskDeleteErrorState(e.toString()));
     }
   }
 

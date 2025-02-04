@@ -4,13 +4,14 @@ void showAppSnackBar(
     {required String message,
     required Color backgroundColor,
     required Color textColor,
-    required BuildContext context}) {
+    required BuildContext context,
+    Duration? duration}) {
   ScaffoldMessenger.of(context).clearSnackBars();
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         message,
         style: TextStyle(color: textColor),
       ),
-      duration: const Duration(seconds: 3),
+      duration: Duration(seconds: duration != null ? duration.inSeconds : 3),
       backgroundColor: backgroundColor));
 }

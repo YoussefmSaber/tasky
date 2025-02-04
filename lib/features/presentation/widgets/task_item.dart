@@ -4,10 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:tasky/core/core.dart';
 import 'package:tasky/core/styles/snackbar.dart';
-import 'package:tasky/features/domain/entities/task/task_data.dart';
-import 'package:tasky/features/presentation/pages/app/home/home/home_cubit.dart';
+import 'package:tasky/features/task/presentation/cubit/home_cubit.dart';
 import 'package:tasky/features/presentation/widgets/app_widgets.dart';
 import 'package:tasky/routes.dart';
+
+import '../../task/domain/entities/task/task_data.dart';
 
 class TaskItem extends StatefulWidget {
   final TaskData task;
@@ -28,8 +29,13 @@ class _TaskItemState extends State<TaskItem> {
         elevation: 0,
         color: Colors.transparent,
         child: ListTile(
-          onTap: () => Navigator.of(context)
-              .pushNamed(RouteGenerator.details, arguments: widget.task.id),
+          onTap: () async {
+            final response = await Navigator.of(context)
+                .pushNamed(RouteGenerator.details, arguments: widget.task.id);
+            if (response == true) {
+              context.read<HomeCubit>().getTasks(1);
+            }
+          },
           contentPadding: EdgeInsets.zero,
           leading: ClipOval(
             child: Image.network(

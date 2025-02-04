@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:tasky/features/domain/entities/task/task_data.dart';
-import 'package:tasky/features/presentation/pages/app/app_pages.dart';
-import 'package:tasky/features/presentation/pages/app/edit_task/edit_task_page.dart';
-import 'package:tasky/features/presentation/pages/auth/auth_pages.dart';
-import 'package:tasky/features/presentation/pages/onboarding/onboard_page.dart';
+import 'package:tasky/features/onboarding/presentation/page/onboard_page.dart';
 
-import 'features/presentation/pages/app/qr_scan/qr_scanner_page.dart';
+import 'features/auth/presentation/pages/login_page.dart';
+import 'features/auth/presentation/pages/register_page.dart';
+import 'features/profile/presentation/page/profile_page.dart';
+import 'features/task/domain/entities/task/task_data.dart';
+import 'features/task/presentation/pages/details_page.dart';
+import 'features/task/presentation/pages/edit_task_page.dart';
+import 'features/task/presentation/pages/home_page.dart';
+import 'features/task/presentation/pages/new_task_page.dart';
+import 'features/task/presentation/pages/qr_scanner_page.dart';
 
 /// A class that generates routes for the application.
 class RouteGenerator {

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tasky/features/data/data_sources/shared_preference.dart';
+import 'package:tasky/core/storage/shared_preference.dart';
 import 'package:tasky/features/presentation/manager/bloc_observer.dart';
-import 'package:tasky/features/presentation/pages/app/add_task/new_task/new_task_cubit.dart';
-import 'package:tasky/features/presentation/pages/app/details/details/details_cubit.dart';
-import 'package:tasky/features/presentation/pages/app/edit_task/cubit/edit_task_cubit.dart';
-import 'package:tasky/features/presentation/pages/app/profile/profile/profile_cubit.dart';
-import 'package:tasky/features/presentation/pages/auth/login/cubit/login_cubit.dart';
-import 'package:tasky/features/presentation/pages/onboarding/cubit/onboarding_cubit.dart';
+import 'package:tasky/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:tasky/features/auth/presentation/cubit/login_cubit.dart';
+import 'package:tasky/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:tasky/injection_container.dart';
 import 'package:tasky/routes.dart';
 
-import 'features/presentation/pages/app/home/home/home_cubit.dart';
-import 'features/presentation/pages/auth/register/cubit/register_cubit.dart';
+import 'features/task/presentation/cubit/details_cubit.dart';
+import 'features/task/presentation/cubit/edit_task_cubit.dart';
+import 'features/task/presentation/cubit/home_cubit.dart';
+import 'features/auth/presentation/cubit/register_cubit.dart';
+import 'features/task/presentation/cubit/new_task_cubit.dart';
 
 /// The main entry point of the application.
 void main() async {

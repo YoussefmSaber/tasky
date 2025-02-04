@@ -45,11 +45,11 @@ class QRScannerOverlay extends StatelessWidget {
   final Color overlayColor;
 
   const QRScannerOverlay({
-    Key? key,
+    super.key,
     required this.borderColor,
     required this.borderWidth,
     required this.overlayColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
